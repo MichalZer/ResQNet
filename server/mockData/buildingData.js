@@ -1,0 +1,12 @@
+const buildingData = {
+    "buildingId": "B1",
+    "floors": 5,
+    "zones": [
+        "A",
+        "B",
+        "C"
+    ],
+    "address": "123 Rescue St."
+}
+
+export default buildingData;
