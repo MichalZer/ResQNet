@@ -1,0 +1,23 @@
+[
+    {
+        "meterId": "meter_4A",
+        "timestamp": "2026-05-27T10:40:00",
+        "areaId": "floor4_zoneA",
+        "usageLevel": "normal",
+        "wentOffline": false
+    },
+    {
+        "meterId": "meter_4A",
+        "timestamp": "2026-05-27T10:42:10",
+        "areaId": "floor4_zoneA",
+        "usageLevel": "high",
+        "wentOffline": false
+    },
+    {
+        "meterId": "meter_4A",
+        "timestamp": "2026-05-27T10:42:15",
+        "areaId": "floor4_zoneA",
+        "usageLevel": "offline",
+        "wentOffline": true
+    }
+]

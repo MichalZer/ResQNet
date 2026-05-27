@@ -1,0 +1,14 @@
+[
+    {
+        "routerId": "wifi_4A",
+        "timestamp": "2026-05-27T10:40:00",
+        "areaId": "floor4_zoneA",
+        "status": "online"
+    },
+    {
+        "routerId": "wifi_4A",
+        "timestamp": "2026-05-27T10:42:15",
+        "areaId": "floor4_zoneA",
+        "status": "offline"
+    }
+]

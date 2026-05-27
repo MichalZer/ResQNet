@@ -1,0 +1,26 @@
+[
+    {
+        "deviceId": "phone_104",
+        "timestamp": "2026-05-27T10:40:00",
+        "areaId": "floor4_zoneA",
+        "signalLost": false
+    },
+    {
+        "deviceId": "phone_205",
+        "timestamp": "2026-05-27T10:40:15",
+        "areaId": "floor4_zoneA",
+        "signalLost": false
+    },
+    {
+        "deviceId": "phone_104",
+        "timestamp": "2026-05-27T10:42:13",
+        "areaId": "floor4_zoneA",
+        "signalLost": true
+    },
+    {
+        "deviceId": "phone_205",
+        "timestamp": "2026-05-27T10:43:05",
+        "areaId": "floor4_zoneA",
+        "signalLost": true
+    }
+]

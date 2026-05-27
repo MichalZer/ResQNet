@@ -1,115 +1,110 @@
 import json
-import random
-import time
-from faker import Faker
+import os
 
-fake = Faker()
+# Base date for the simulation
+BASE_DATE = "2026-05-27T"
 
-def generate_building_data(is_shabbat=False):
-    data = {"cellular": [], "wifi": [], "smart_meters": [], "wearables": []}
-    floors = range(1, 6)
-    zones = ["A", "B", "C"]
-    
-    for floor in floors:
-        for zone in zones:
-            apartment_id = f"{floor}{zone}"
-            usage_probability = 0.2 if is_shabbat else 1.0
-            
-            num_phones = int(random.randint(0, 4) * usage_probability)
-            for i in range(num_phones):
-                data["cellular"].append({
-                    "deviceId": f"phone_{floor}_{zone}_{i}",
-                    "lastSeen": fake.time(), # Updates dynamically
-                    "floor": floor,
-                    "zone": zone,
-                    "signalLost": False
-                })
-                
-            if random.random() < usage_probability:
-                data["wifi"].append({
-                    "routerId": f"wifi_{apartment_id}",
-                    "floor": floor,
-                    "apartment": apartment_id,
-                    "connectedDevices": random.randint(1, 5),
-                    "wentOfflineAt": None,
-                    "status": "online"
-                })
-                
-            data["smart_meters"].append({
-                "meterId": f"meter_{apartment_id}",
-                "floor": floor,
-                "apartment": apartment_id,
-                "powerUsage": round(random.uniform(1.0, 5.0), 1),
-                "usageLevel": "normal",
-                "wentOffline": False
-            })
-            
-            if random.random() > 0.5:
-                data["wearables"].append({
-                    "wearableId": f"watch_{floor}_{zone}",
-                    "lastSync": fake.time(),
-                    "heartRate": random.randint(60, 90),
-                    "floor": floor,
-                    "zone": zone,
-                    "disconnected": False
-                })
-    return data
+def create_zone_state(priority_score, risk_level, phones_disconnected, wifi_offline, electricity, wearable):
+    """ Helper for Elinor's UI format """
+    return {
+        "id": "floor4_zoneA",
+        "floor": 4,
+        "name": "Zone A",
+        "priorityScore": priority_score,
+        "riskLevel": risk_level,
+        "estimatedTrapped": 4,
+        "signals": {
+            "phonesDisconnected": phones_disconnected,
+            "wifiOffline": wifi_offline,
+            "electricityUsage": electricity,
+            "wearableAlert": wearable
+        },
+        "coordinates": {"x": 120, "y": 80}
+    }
 
-def trigger_disaster(data, collapse_floor, collapse_zone):
-    collapse_time = fake.time()
-    
-    for phone in data["cellular"]:
-        if phone["floor"] == collapse_floor and phone["zone"] == collapse_zone:
-            phone["signalLost"] = True
-            phone["lastSeen"] = collapse_time
-            
-    for wifi in data["wifi"]:
-        if wifi["floor"] == collapse_floor and wifi["apartment"] == f"{collapse_floor}{collapse_zone}":
-            wifi["status"] = "offline"
-            wifi["wentOfflineAt"] = collapse_time
-            
-    for meter in data["smart_meters"]:
-        if meter["floor"] == collapse_floor and meter["apartment"] == f"{collapse_floor}{collapse_zone}":
-            meter["powerUsage"] = 9.8 
-            meter["usageLevel"] = "high"
-            meter["wentOffline"] = True
-            
-    for watch in data["wearables"]:
-        if watch["floor"] == collapse_floor and watch["zone"] == collapse_zone:
-            watch["heartRate"] = 145 
-            watch["lastSync"] = collapse_time
-            watch["disconnected"] = True
-            
-    return data
+def generate_mock_data_files():
+    print("Generating static mock data files for Simulation Time...")
 
-# --- REAL-TIME SIMULATION DEMO FLOW ---
-def run_live_simulation():
-    print("🚀 Starting ResQNet Live Data Stream Simulation...")
-    
-    # 1. Start with Normal State
-    current_data = generate_building_data(is_shabbat=False)
-    
-    # Simulate normal activity for 10 seconds (5 ticks of 2 seconds)
-    for i in range(5):
-        print(f"⏳ Streaming Normal Data... (Tick {i+1}/5)")
-        # Overwrite the same file to simulate a live updating database/stream
-        with open('live_stream.json', 'w') as f:
-            json.dump(current_data, f, indent=4)
-        time.sleep(2) # Wait 2 seconds before the next update
-        
-    # 2. Trigger the disaster in real-time!
-    print("\n🚨 !!! DISASTER TRIGGERED: COLLAPSE AT FLOOR 4, ZONE A !!! 🚨\n")
-    current_data = trigger_disaster(current_data, collapse_floor=4, collapse_zone="A")
-    
-    # Simulate the aftermath stream for another 10 seconds
-    for i in range(5):
-        print(f"📡 Streaming Post-Collapse Data... (Tick {i+1}/5)")
-        with open('live_stream.json', 'w') as f:
-            json.dump(current_data, f, indent=4)
-        time.sleep(2)
-        
-    print("🏁 Simulation Finished.")
+    # 1. building.json (Static info)
+    building = {
+        "buildingId": "B1",
+        "floors": 5,
+        "zones": ["A", "B", "C"],
+        "address": "123 Rescue St."
+    }
 
-# Run the simulation
+    # 2. cellular_events.json (Michal's format)
+    cellular_events = [
+        {"deviceId": "phone_104", "timestamp": f"{BASE_DATE}10:40:00", "areaId": "floor4_zoneA", "signalLost": False},
+        {"deviceId": "phone_205", "timestamp": f"{BASE_DATE}10:40:15", "areaId": "floor4_zoneA", "signalLost": False},
+        {"deviceId": "phone_104", "timestamp": f"{BASE_DATE}10:42:13", "areaId": "floor4_zoneA", "signalLost": True},
+        {"deviceId": "phone_205", "timestamp": f"{BASE_DATE}10:43:05", "areaId": "floor4_zoneA", "signalLost": True}
+    ]
+
+    # 3. wifi_events.json
+    wifi_events = [
+        {"routerId": "wifi_4A", "timestamp": f"{BASE_DATE}10:40:00", "areaId": "floor4_zoneA", "status": "online"},
+        {"routerId": "wifi_4A", "timestamp": f"{BASE_DATE}10:42:15", "areaId": "floor4_zoneA", "status": "offline"}
+    ]
+
+    # 4. smart_meter_events.json
+    smart_meter_events = [
+        {"meterId": "meter_4A", "timestamp": f"{BASE_DATE}10:40:00", "areaId": "floor4_zoneA", "usageLevel": "normal", "wentOffline": False},
+        {"meterId": "meter_4A", "timestamp": f"{BASE_DATE}10:42:10", "areaId": "floor4_zoneA", "usageLevel": "high", "wentOffline": False},
+        {"meterId": "meter_4A", "timestamp": f"{BASE_DATE}10:42:15", "areaId": "floor4_zoneA", "usageLevel": "offline", "wentOffline": True}
+    ]
+
+    # 5. wearable_events.json
+    wearable_events = [
+        {"wearableId": "watch_22", "timestamp": f"{BASE_DATE}10:40:00", "areaId": "floor4_zoneA", "heartRate": 72, "disconnected": False},
+        {"wearableId": "watch_22", "timestamp": f"{BASE_DATE}10:42:14", "areaId": "floor4_zoneA", "heartRate": 145, "disconnected": True}
+    ]
+
+    # 6. collapse_events.json
+    collapse_events = [
+        {"eventId": "C-001", "timestamp": f"{BASE_DATE}10:42:00", "areaId": "floor4_zoneA", "severity": "high"}
+    ]
+
+    # 7. simulation_timeline.json (Elinor & Michal's combined UI state per simulation time)
+    simulation_timeline = {
+        "10:40": {
+            "desc": "Building Stable",
+            "buildingId": "B1",
+            "zones": [create_zone_state(12, "low", 0, False, "normal", False)]
+        },
+        "10:42": {
+            "desc": "Minor Collapse Detected",
+            "buildingId": "B1",
+            "zones": [create_zone_state(45, "medium", 1, False, "high", False)]
+        },
+        "10:43": {
+            "desc": "Signals Lost",
+            "buildingId": "B1",
+            "zones": [create_zone_state(68, "high", 3, True, "high", False)]
+        },
+        "10:45": {
+            "desc": "Critical Alert Triggered / Rescue Priority Updated",
+            "buildingId": "B1",
+            "zones": [create_zone_state(95, "critical", 4, True, "offline", True)]
+        }
+    }
+
+    # Helper function to write files safely
+    def save_json(filename, data):
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=4)
+        print(f"Created: {filename}")
+
+    # Save all files to the current directory (which is 'data')
+    save_json('building.json', building)
+    save_json('cellular_events.json', cellular_events)
+    save_json('wifi_events.json', wifi_events)
+    save_json('smart_meter_events.json', smart_meter_events)
+    save_json('wearable_events.json', wearable_events)
+    save_json('collapse_events.json', collapse_events)
+    save_json('simulation_timeline.json', simulation_timeline)
+
+    print("\nAll mock data files generated successfully for the server!")
+
 if __name__ == "__main__":
-    run_live_simulation()
+    generate_mock_data_files()
