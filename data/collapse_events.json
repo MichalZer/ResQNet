@@ -1,8 +1,16 @@
 [
     {
-        "eventId": "C-001",
+        "source": "collapse",
+        "eventType": "structural_damage",
         "timestamp": "2026-05-27T10:42:00",
         "areaId": "floor4_zoneA",
         "severity": "high"
+    },
+    {
+        "source": "collapse",
+        "eventType": "structural_damage",
+        "timestamp": "2026-05-27T10:42:00",
+        "areaId": "floor5_zoneC",
+        "severity": "low"
     }
 ]

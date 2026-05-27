@@ -1,16 +1,23 @@
 [
     {
-        "wearableId": "watch_22",
+        "source": "wearable",
+        "eventType": "normal_heart_rate",
         "timestamp": "2026-05-27T10:40:00",
         "areaId": "floor4_zoneA",
-        "heartRate": 72,
-        "disconnected": false
+        "heartRate": 72
     },
     {
-        "wearableId": "watch_22",
+        "source": "wearable",
+        "eventType": "high_heart_rate",
         "timestamp": "2026-05-27T10:42:14",
         "areaId": "floor4_zoneA",
-        "heartRate": 145,
-        "disconnected": true
+        "heartRate": 145
+    },
+    {
+        "source": "wearable",
+        "eventType": "device_disconnected",
+        "timestamp": "2026-05-27T10:43:00",
+        "areaId": "floor4_zoneA",
+        "heartRate": 0
     }
 ]

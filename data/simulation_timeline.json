@@ -9,16 +9,38 @@
                 "name": "Zone A",
                 "priorityScore": 12,
                 "riskLevel": "low",
-                "estimatedTrapped": 4,
+                "estimatedPeople": 4,
+                "estimatedTrapped": 0,
                 "signals": {
                     "phonesDisconnected": 0,
                     "wifiOffline": false,
                     "electricityUsage": "normal",
                     "wearableAlert": false
                 },
+                "evidence": [],
                 "coordinates": {
                     "x": 120,
                     "y": 80
+                }
+            },
+            {
+                "id": "floor2_zoneB",
+                "floor": 2,
+                "name": "Zone B",
+                "priorityScore": 5,
+                "riskLevel": "low",
+                "estimatedPeople": 2,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 80,
+                    "y": 45
                 }
             }
         ]
@@ -33,6 +55,7 @@
                 "name": "Zone A",
                 "priorityScore": 45,
                 "riskLevel": "medium",
+                "estimatedPeople": 4,
                 "estimatedTrapped": 4,
                 "signals": {
                     "phonesDisconnected": 1,
@@ -40,9 +63,32 @@
                     "electricityUsage": "high",
                     "wearableAlert": false
                 },
+                "evidence": [
+                    "Electricity usage spike"
+                ],
                 "coordinates": {
                     "x": 120,
                     "y": 80
+                }
+            },
+            {
+                "id": "floor2_zoneB",
+                "floor": 2,
+                "name": "Zone B",
+                "priorityScore": 5,
+                "riskLevel": "low",
+                "estimatedPeople": 2,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 80,
+                    "y": 45
                 }
             }
         ]
@@ -57,16 +103,42 @@
                 "name": "Zone A",
                 "priorityScore": 68,
                 "riskLevel": "high",
+                "estimatedPeople": 4,
                 "estimatedTrapped": 4,
                 "signals": {
                     "phonesDisconnected": 3,
                     "wifiOffline": true,
-                    "electricityUsage": "high",
+                    "electricityUsage": "offline",
                     "wearableAlert": false
                 },
+                "evidence": [
+                    "Electricity usage spike",
+                    "WiFi offline",
+                    "Multiple phones lost"
+                ],
                 "coordinates": {
                     "x": 120,
                     "y": 80
+                }
+            },
+            {
+                "id": "floor2_zoneB",
+                "floor": 2,
+                "name": "Zone B",
+                "priorityScore": 5,
+                "riskLevel": "low",
+                "estimatedPeople": 2,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 80,
+                    "y": 45
                 }
             }
         ]
@@ -81,6 +153,7 @@
                 "name": "Zone A",
                 "priorityScore": 95,
                 "riskLevel": "critical",
+                "estimatedPeople": 4,
                 "estimatedTrapped": 4,
                 "signals": {
                     "phonesDisconnected": 4,
@@ -88,9 +161,35 @@
                     "electricityUsage": "offline",
                     "wearableAlert": true
                 },
+                "evidence": [
+                    "Electricity usage spike",
+                    "WiFi offline",
+                    "Multiple phones lost",
+                    "Wearable high HR"
+                ],
                 "coordinates": {
                     "x": 120,
                     "y": 80
+                }
+            },
+            {
+                "id": "floor2_zoneB",
+                "floor": 2,
+                "name": "Zone B",
+                "priorityScore": 5,
+                "riskLevel": "low",
+                "estimatedPeople": 2,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 80,
+                    "y": 45
                 }
             }
         ]
