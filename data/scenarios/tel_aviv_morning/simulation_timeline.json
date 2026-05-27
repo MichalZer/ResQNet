@@ -42,6 +42,26 @@
                     "x": 80,
                     "y": 45
                 }
+            },
+            {
+                "id": "floor5_zoneC",
+                "floor": 5,
+                "name": "Zone C",
+                "priorityScore": 10,
+                "riskLevel": "low",
+                "estimatedPeople": 3,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 200,
+                    "y": 150
+                }
             }
         ]
     },
@@ -64,7 +84,7 @@
                     "wearableAlert": false
                 },
                 "evidence": [
-                    "Electricity usage spike"
+                    "Electricity spike"
                 ],
                 "coordinates": {
                     "x": 120,
@@ -89,6 +109,28 @@
                 "coordinates": {
                     "x": 80,
                     "y": 45
+                }
+            },
+            {
+                "id": "floor5_zoneC",
+                "floor": 5,
+                "name": "Zone C",
+                "priorityScore": 30,
+                "riskLevel": "low",
+                "estimatedPeople": 3,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "high",
+                    "wearableAlert": false
+                },
+                "evidence": [
+                    "Electricity spike"
+                ],
+                "coordinates": {
+                    "x": 200,
+                    "y": 150
                 }
             }
         ]
@@ -112,9 +154,8 @@
                     "wearableAlert": false
                 },
                 "evidence": [
-                    "Electricity usage spike",
                     "WiFi offline",
-                    "Multiple phones lost"
+                    "Phones lost"
                 ],
                 "coordinates": {
                     "x": 120,
@@ -140,11 +181,34 @@
                     "x": 80,
                     "y": 45
                 }
+            },
+            {
+                "id": "floor5_zoneC",
+                "floor": 5,
+                "name": "Zone C",
+                "priorityScore": 45,
+                "riskLevel": "medium",
+                "estimatedPeople": 3,
+                "estimatedTrapped": 1,
+                "signals": {
+                    "phonesDisconnected": 1,
+                    "wifiOffline": false,
+                    "electricityUsage": "high",
+                    "wearableAlert": false
+                },
+                "evidence": [
+                    "Phone lost",
+                    "Elevated HR"
+                ],
+                "coordinates": {
+                    "x": 200,
+                    "y": 150
+                }
             }
         ]
     },
     "10:45": {
-        "desc": "Critical Alert Triggered / Rescue Priority Updated",
+        "desc": "Critical Alert Triggered",
         "buildingId": "B1",
         "zones": [
             {
@@ -162,10 +226,9 @@
                     "wearableAlert": true
                 },
                 "evidence": [
-                    "Electricity usage spike",
                     "WiFi offline",
                     "Multiple phones lost",
-                    "Wearable high HR"
+                    "High HR"
                 ],
                 "coordinates": {
                     "x": 120,
@@ -190,6 +253,29 @@
                 "coordinates": {
                     "x": 80,
                     "y": 45
+                }
+            },
+            {
+                "id": "floor5_zoneC",
+                "floor": 5,
+                "name": "Zone C",
+                "priorityScore": 55,
+                "riskLevel": "medium",
+                "estimatedPeople": 3,
+                "estimatedTrapped": 2,
+                "signals": {
+                    "phonesDisconnected": 1,
+                    "wifiOffline": false,
+                    "electricityUsage": "high",
+                    "wearableAlert": true
+                },
+                "evidence": [
+                    "Elevated HR",
+                    "Partial collapse"
+                ],
+                "coordinates": {
+                    "x": 200,
+                    "y": 150
                 }
             }
         ]

@@ -1,0 +1,24 @@
+{
+    "buildingId": "B2",
+    "floors": 3,
+    "areas": [
+        {
+            "areaId": "floor1_zoneA",
+            "floor": 1,
+            "zone": "A",
+            "coordinates": {
+                "x": 100,
+                "y": 50
+            }
+        },
+        {
+            "areaId": "floor3_zoneB",
+            "floor": 3,
+            "zone": "B",
+            "coordinates": {
+                "x": 100,
+                "y": 150
+            }
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+[
+    {
+        "source": "smart_meter",
+        "eventType": "normal_usage",
+        "timestamp": "2026-05-27T14:00:00",
+        "areaId": "floor3_zoneB",
+        "usageLevel": "high"
+    },
+    {
+        "source": "smart_meter",
+        "eventType": "meter_offline",
+        "timestamp": "2026-05-27T14:05:00",
+        "areaId": "floor3_zoneB",
+        "usageLevel": "offline"
+    }
+]

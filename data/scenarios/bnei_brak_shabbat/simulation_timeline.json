@@ -1,0 +1,58 @@
+{
+    "14:00": {
+        "desc": "Quiet Shabbat Afternoon",
+        "buildingId": "B2",
+        "zones": [
+            {
+                "id": "floor3_zoneB",
+                "floor": 3,
+                "name": "Zone B",
+                "priorityScore": 5,
+                "riskLevel": "low",
+                "estimatedPeople": 6,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 100,
+                    "y": 150
+                }
+            }
+        ]
+    },
+    "14:05": {
+        "desc": "Collapse Detected via Smart Meters",
+        "buildingId": "B2",
+        "zones": [
+            {
+                "id": "floor3_zoneB",
+                "floor": 3,
+                "name": "Zone B",
+                "priorityScore": 88,
+                "riskLevel": "critical",
+                "estimatedPeople": 6,
+                "estimatedTrapped": 6,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "offline",
+                    "wearableAlert": true
+                },
+                "evidence": [
+                    "Smart meter offline",
+                    "High HR detected",
+                    "Structural damage"
+                ],
+                "coordinates": {
+                    "x": 100,
+                    "y": 150
+                }
+            }
+        ]
+    }
+}
