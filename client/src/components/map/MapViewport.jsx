@@ -1,13 +1,18 @@
-import { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import { MapPin, Sparkles } from 'lucide-react';
+import { useEffect, useMemo } from 'react';
+import L from 'leaflet';
+import {
+  Circle,
+  CircleMarker,
+  MapContainer,
+  Marker,
+  TileLayer,
+  Tooltip,
+  useMap,
+} from 'react-leaflet';
+import { Sparkles } from 'lucide-react';
 import { useMapStore } from '../../store';
-import 'mapbox-gl/dist/mapbox-gl.css';
-
-const mapToken = import.meta.env.VITE_MAPBOX_TOKEN || '';
-if (mapToken) {
-  mapboxgl.accessToken = mapToken;
-}
+import MapEffects from './MapEffects';
+import 'leaflet/dist/leaflet.css';
 
 const riskColor = (riskLevel) => {
   switch (riskLevel) {
@@ -18,6 +23,67 @@ const riskColor = (riskLevel) => {
   }
 };
 
+const toLeafletCenter = ([lng, lat]) => [lat, lng];
+
+const clampZoom = (zoom) => Math.min(Math.max(zoom, 3), 18);
+
+const getMarkerPercent = (position = {}) => ({
+  left: Number.parseFloat(position.left) || 50,
+  top: Number.parseFloat(position.top) || 50,
+});
+
+const coordinateFromPercent = (center, position, scale = 0.018) => {
+  const { left, top } = getMarkerPercent(position);
+  const [lat, lng] = center;
+
+  return [
+    lat - ((top - 50) * scale),
+    lng + ((left - 50) * scale),
+  ];
+};
+
+const coordinateFromPixels = (center, position, scale = 0.00055) => {
+  const x = Number(position?.x) || 150;
+  const y = Number(position?.y) || 150;
+  const [lat, lng] = center;
+
+  return [
+    lat - ((y - 150) * scale),
+    lng + ((x - 150) * scale),
+  ];
+};
+
+const createBuildingIcon = (building) => L.divIcon({
+  className: '',
+  html: `
+    <div class="flex items-center gap-2 rounded-full bg-[#0F1524]/90 px-3 py-2 border border-[#151D30] shadow-lg text-xs font-semibold text-slate-100 whitespace-nowrap">
+      <span class="block h-2.5 w-2.5 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.8)]"></span>
+      <span>${building.name}</span>
+    </div>
+  `,
+  iconSize: [120, 34],
+  iconAnchor: [60, 17],
+});
+
+function MapViewController({ center, zoom }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.flyTo(center, clampZoom(zoom), {
+      animate: true,
+      duration: 1.4,
+    });
+  }, [center, map, zoom]);
+
+  return null;
+}
+
+/**
+ * MapViewport Component
+ * Renders an OpenStreetMap-backed Leaflet map of Israel with:
+ * - Interactive city/incident/building markers
+ * - Smooth fly-to transitions through react-leaflet
+ */
 export function MapViewport({
   mode: propMode,
   cities = [],
@@ -26,209 +92,80 @@ export function MapViewport({
   onCitySelect,
   onBuildingSelect,
 }) {
-  const containerRef = useRef(null);
-  const mapRef = useRef(null);
-
-  // Bind to MapStore for reactive viewport updates
-  const { 
-    currentView, 
-    zoom, 
-    pitch, 
-    bearing, 
-    mapCenter, 
-    selectedCity 
+  const {
+    currentView,
+    zoom,
+    pitch,
+    bearing,
+    mapCenter,
+    selectedCity,
   } = useMapStore();
 
   const mode = propMode || currentView;
+  const leafletCenter = useMemo(() => toLeafletCenter(mapCenter), [mapCenter]);
+  const cityCenter = selectedCity?.coordinates || leafletCenter;
 
-  // Initial Map Load
-  useEffect(() => {
-    if (!mapToken || !containerRef.current) return;
+  const cityMarkers = useMemo(
+    () => (mode === 'world' || mode === 'overview') ? cities.map((city) => ({
+      ...city,
+      color: riskColor(city.riskLevel),
+    })) : [],
+    [cities, mode]
+  );
 
-    mapRef.current = new mapboxgl.Map({
-      container: containerRef.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
-      center: mapCenter,
-      zoom: zoom,
-      pitch: pitch,
-      bearing: bearing,
-    });
-
-    mapRef.current.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
-
-    // Add 3D layers after map loads
-    mapRef.current.on('load', () => {
-      // Enable 3D buildings
-      const buildingLayerId = 'building';
-      const layers = mapRef.current.getStyle().layers;
-      const labelLayerId = layers.find(layer => layer.type === 'symbol' && layer.layout['text-field'])?.id;
-
-      // Add 3D building extrusion layer
-      if (!mapRef.current.getLayer('3d-buildings')) {
-        mapRef.current.addLayer(
-          {
-            id: '3d-buildings',
-            source: 'composite',
-            'source-layer': 'building',
-            type: 'fill-extrusion',
-            paint: {
-              'fill-extrusion-color': '#0F1524',
-              'fill-extrusion-height': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                15,
-                0,
-                15.05,
-                ['get', 'height'],
-              ],
-              'fill-extrusion-base': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                15,
-                0,
-                15.05,
-                ['get', 'min_height'],
-              ],
-              'fill-extrusion-opacity': 0.6,
-            },
-          },
-          labelLayerId
-        );
-      }
-
-      // Add sky layer for atmospheric effect
-      if (!mapRef.current.getLayer('sky')) {
-        mapRef.current.addLayer({
-          id: 'sky',
-          type: 'sky',
-          paint: {
-            'sky-type': 'atmosphere',
-            'sky-atmosphere-sun': [0.0, 0.0],
-            'sky-atmosphere-sun-intensity': 15,
-          },
-        });
-      }
-    });
-
-    return () => {
-      mapRef.current?.remove();
-      mapRef.current = null;
-    };
-  }, []); // Run only on mount
-
-  // React to store changes for smooth flyTo transitions
-  useEffect(() => {
-    if (!mapRef.current) return;
-
-    mapRef.current.flyTo({
-      center: mapCenter,
-      zoom: zoom,
-      pitch: pitch,
-      bearing: bearing,
-      essential: true,
-      duration: 2000
-    });
-  }, [mapCenter, zoom, pitch, bearing]);
-
-  const renderMarkers = () => {
+  const renderMapLayers = () => {
     if (mode === 'world' || mode === 'overview') {
-      return cities.map((item) => {
-        const color = riskColor(item.riskLevel);
-        
-        return (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => onCitySelect?.(item)}
-            className="absolute flex items-center gap-3 transform -translate-x-1/2 -translate-y-1/2 group z-10"
-            style={{ left: item.markerPosition.left, top: item.markerPosition.top }}
-          >
-            {/* Outer pulsing glow halo */}
-            <span
-              className="absolute w-8 h-8 rounded-full animate-pulse"
-              style={{ 
-                backgroundColor: color,
-                opacity: 0.3,
-                filter: 'blur(8px)',
-                transform: 'translate(-50%, -50%)',
-                left: '0',
-                top: '0'
-              }}
-            />
-            {/* Glowing ring */}
-            <span
-              className="absolute w-6 h-6 rounded-full border-2 opacity-60"
-              style={{ 
-                borderColor: color,
-                filter: 'blur(0.5px)',
-                transform: 'translate(-50%, -50%)',
-                left: '0',
-                top: '0'
-              }}
-            />
-            {/* Core bright dot */}
-            <span
-              className="w-4 h-4 rounded-full group-hover:scale-125 transition-all duration-300 cursor-pointer flex-shrink-0"
-              style={{ 
-                backgroundColor: color,
-                boxShadow: `0 0 15px ${color}dd, 0 0 30px ${color}77, 0 0 45px ${color}44`
-              }}
-            />
-            {/* City label */}
-            <span className="text-xs text-slate-100 font-bold uppercase tracking-[0.2em] drop-shadow-lg group-hover:text-white transition-all whitespace-nowrap flex-shrink-0">
+      return cityMarkers.map((item) => (
+        <CircleMarker
+          key={item.id}
+          center={item.coordinates}
+          radius={8}
+          pathOptions={{
+            color: item.color,
+            fillColor: item.color,
+            fillOpacity: 0.9,
+            opacity: 0.85,
+            weight: 2,
+          }}
+          eventHandlers={{ click: () => onCitySelect?.(item) }}
+        >
+          <Tooltip direction="right" offset={[12, 0]} permanent>
+            <span className="text-xs font-bold uppercase tracking-[0.18em]">
               {item.name}
             </span>
-          </button>
-        );
-      });
+          </Tooltip>
+        </CircleMarker>
+      ));
     }
 
     if (mode === 'city') {
       return (
         <>
           {incidentZones.map((zone) => (
-            <div
+            <Circle
               key={zone.id}
-              className="absolute rounded-full opacity-40 animate-pulse"
-              style={{
-                left: `${zone.coordinates.x}px`,
-                top: `${zone.coordinates.y}px`,
-                width: `${zone.radius}px`,
-                height: `${zone.radius}px`,
-                backgroundColor: riskColor(zone.riskLevel),
-                transform: 'translate(-50%, -50%)',
-                boxShadow: `0 0 30px ${riskColor(zone.riskLevel)}99, inset 0 0 20px ${riskColor(zone.riskLevel)}55`
+              center={coordinateFromPixels(cityCenter, zone.coordinates)}
+              radius={zone.radius * 8}
+              pathOptions={{
+                color: riskColor(zone.riskLevel),
+                fillColor: riskColor(zone.riskLevel),
+                fillOpacity: 0.22,
+                opacity: 0.65,
+                weight: 2,
               }}
-            />
+            >
+              <Tooltip direction="top">{zone.name}</Tooltip>
+            </Circle>
           ))}
           {buildings.map((building) => (
-            <button
+            <Marker
               key={building.id}
-              type="button"
-              onClick={() => onBuildingSelect?.(building)}
-              className="absolute flex items-center gap-2 rounded-full bg-[#0F1524]/90 px-3 py-2 border border-[#151D30] shadow-lg hover:shadow-xl text-xs font-semibold text-slate-100 hover:border-cyan-400 transition-all\"
-              style={{ left: building.markerPosition.left, top: building.markerPosition.top, transform: 'translate(-50%, -50%)' }}
-            >
-              <MapPin className="w-3 h-3 text-cyan-400" />
-              {building.name}
-            </button>
+              position={coordinateFromPercent(cityCenter, building.markerPosition, 0.0024)}
+              icon={createBuildingIcon(building)}
+              eventHandlers={{ click: () => onBuildingSelect?.(building) }}
+            />
           ))}
         </>
-      );
-    }
-
-    if (mode === 'building') {
-      return (
-        <div className="absolute inset-0 p-6 pointer-events-none">
-          <div className="absolute inset-x-10 top-10 rounded-2xl border border-cyan-500/30 bg-[#0F1524]/90 p-5 shadow-2xl backdrop-blur-sm">
-            <div className="flex items-center gap-3 text-sm text-slate-300">
-              <Sparkles className="w-4 h-4 text-cyan-400" />
-              <span className="text-slate-200">Rescue heatmap overlay - High Accuracy Vector</span>
-            </div>
-          </div>
-        </div>
       );
     }
 
@@ -237,30 +174,51 @@ export function MapViewport({
 
   return (
     <div className="relative w-full h-full bg-[#0B0F19] overflow-hidden">
-      {mapToken ? (
-        <div ref={containerRef} className="absolute inset-0" />
-      ) : (
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(14,164,233,0.12),_transparent_50%),linear-gradient(180deg,#0B0F19_0%,#0F1524_100%)]" />
+      <MapContainer
+        center={leafletCenter}
+        zoom={clampZoom(zoom)}
+        minZoom={3}
+        maxZoom={18}
+        zoomControl={false}
+        className="absolute inset-0 z-0"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapViewController center={leafletCenter} zoom={zoom} />
+        {renderMapLayers()}
+      </MapContainer>
+
+      <MapEffects isActive mode={mode} />
+
+      {mode === 'building' && (
+        <div className="absolute inset-0 z-10 p-6 pointer-events-none">
+          <div className="absolute inset-x-10 top-10 rounded-2xl border border-cyan-500/30 bg-[#0F1524]/90 p-5 shadow-2xl backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-sm text-slate-300">
+              <Sparkles className="w-4 h-4 text-cyan-400" />
+              <span className="text-slate-200">Building Tactical Heatmap - High Precision Vector</span>
+            </div>
+          </div>
+        </div>
       )}
 
-      <div className="absolute inset-0 pointer-events-none">
-        {renderMarkers()}
-      </div>
-
-      {/* Top-Left Info Card */}
-      <div className="absolute left-6 top-6 rounded-2xl border border-[#151D30] bg-[#0F1524]/90 p-4 shadow-2xl w-72 backdrop-blur-md">
+      <div className="absolute left-6 top-6 z-20 rounded-2xl border border-[#151D30] bg-[#0F1524]/95 p-4 shadow-2xl w-72 backdrop-blur-md pointer-events-auto">
         <div className="text-xs uppercase tracking-[0.24em] text-slate-400 mb-2">
-          {mode === 'world' || mode === 'overview' ? 'Israel Overview' : mode === 'city' ? selectedCity?.name || 'City Detail' : 'Rescue Operation'}
+          {mode === 'world' || mode === 'overview' ? 'Israel Emergency Command' : mode === 'city' ? selectedCity?.name || 'City Detail' : 'Building Rescue Operation'}
         </div>
         <div className="text-sm text-white font-semibold">
-          {mode === 'world' || mode === 'overview' ? 'Emergency command center' : mode === 'city' ? selectedCity?.summary : 'Building rescue vector'}
+          {mode === 'world' || mode === 'overview' ? 'National tactical overview' : mode === 'city' ? selectedCity?.summary : 'Tactical rescue vector'}
         </div>
       </div>
 
-      {/* Bottom-Right Metrics */}
-      <div className="absolute bottom-6 right-6 rounded-2xl border border-[#151D30] bg-[#0F1524]/90 px-4 py-3 text-xs text-slate-400 backdrop-blur-md">
-        <div className="text-slate-300">3D Map: {mapToken ? 'Mapbox GL' : 'Tactical'}</div>
-        <div>Zoom: {zoom.toFixed(1)} | {mode.toUpperCase()}</div>
+      <div className="absolute bottom-6 right-6 z-20 rounded-2xl border border-[#151D30] bg-[#0F1524]/95 px-4 py-3 text-xs text-slate-400 backdrop-blur-md pointer-events-auto">
+        <div className="text-slate-300 font-mono">
+          OpenStreetMap + Leaflet
+        </div>
+        <div className="font-mono mt-1">
+          Z: {zoom.toFixed(1)} | P: {pitch.toFixed(0)} deg | B: {bearing.toFixed(0)} deg
+        </div>
       </div>
     </div>
   );
