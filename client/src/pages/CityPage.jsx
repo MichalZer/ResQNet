@@ -14,7 +14,7 @@ export function CityPage() {
   const navigate = useNavigate();
   const [city, setCity] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { setView, resetMap, currentView, selectedCity: storeCity } = useMapStore();
+  const { setView, resetMap } = useMapStore();
 
   useEffect(() => {
     const fetchCity = async () => {
@@ -22,13 +22,13 @@ export function CityPage() {
       setCity(data);
       setLoading(false);
       
-      // Sync store only if we are not already in city view for THIS city
-      if (currentView !== 'city' || storeCity?.id !== cityId) {
+      // Keep building focus intact during the cinematic transition into street view.
+      if (useMapStore.getState().currentView !== 'building') {
         setView('city', { city: data });
       }
     };
     fetchCity();
-  }, [cityId, setView, currentView, storeCity?.id]);
+  }, [cityId, setView]);
 
   const handleBack = (e) => {
     e?.preventDefault();
@@ -40,6 +40,13 @@ export function CityPage() {
 
   const buildings = city?.buildings || [];
   const sortedBuildings = [...buildings].sort((a, b) => b.priorityScore - a.priorityScore);
+
+  const focusBuilding = (building) => {
+    setView('building', { city, building });
+    window.setTimeout(() => {
+      navigate(`/city/${cityId}/building/${building.id}`);
+    }, 950);
+  };
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#07111F] text-slate-100">
@@ -91,10 +98,7 @@ export function CityPage() {
                 <button
                   key={building.id}
                   type="button"
-                  onClick={() => {
-                    setView('building', { building });
-                    navigate(`/city/${cityId}/building/${building.id}`);
-                  }}
+                  onClick={() => focusBuilding(building)}
                   className="group relative flex w-full flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.035] p-4 text-left transition-all duration-300 hover:border-[#4FD1FF]/45 hover:bg-white/[0.055]"
                 >
                   {/* Rank Badge */}
@@ -155,10 +159,7 @@ export function CityPage() {
                 mode="city"
                 buildings={buildings}
                 incidentZones={city?.incidentZones || []}
-                onBuildingSelect={(building) => {
-                  setView('building', { building });
-                  navigate(`/city/${cityId}/building/${building.id}`);
-                }}
+                onBuildingSelect={focusBuilding}
               />
 
            

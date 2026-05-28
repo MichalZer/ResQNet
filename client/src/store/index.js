@@ -1,5 +1,22 @@
 import { create } from 'zustand';
 
+const getMarkerPercent = (position = {}) => ({
+  left: Number.parseFloat(position.left) || 50,
+  top: Number.parseFloat(position.top) || 50,
+});
+
+const buildingCoordinateFromCity = (city, building, scale = 0.00045) => {
+  if (!city?.coordinates || !building?.markerPosition) return null;
+
+  const { left, top } = getMarkerPercent(building.markerPosition);
+  const [lat, lng] = city.coordinates;
+
+  return [
+    lng + ((left - 50) * scale),
+    lat - ((top - 50) * scale),
+  ];
+};
+
 export const useMapStore = create((set, get) => ({
   // Navigation & View State
   currentView: 'world', // 'world' | 'city' | 'building'
@@ -45,13 +62,14 @@ export const useMapStore = create((set, get) => ({
     if (view === 'city' && data.city) {
       // Convert [lat, lon] to [lon, lat] without mutation
       const coords = [...data.city.coordinates].reverse();
-      newViewport = { zoom: 10, pitch: 45, bearing: 20, center: coords };
+      newViewport = { zoom: 13.2, pitch: 48, bearing: 20, center: coords };
     } else if (view === 'building' && data.building) {
-      // Building zoom level
-      const coords = data.building.markerPosition ? 
-        [35.2137, 31.7683] : // Default to Jerusalem area if not specified
-        [34.8854, 31.7844];
-      newViewport = { zoom: 16.5, pitch: 60, bearing: -15, center: coords };
+      const city = data.city || selectedCity;
+      const coords =
+        data.building.coordinates ||
+        buildingCoordinateFromCity(city, data.building) ||
+        mapCenter;
+      newViewport = { zoom: 17.35, pitch: 60, bearing: bearing || -15, center: coords };
     }
 
     set({

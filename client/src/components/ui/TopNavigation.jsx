@@ -1,11 +1,15 @@
 import { AlertTriangle, Gauge, Menu, Radio, Settings, Signal, Target } from 'lucide-react';
-import { useUIStore, useSimulationStore, useZonesStore } from '../../store';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useMapStore, useUIStore, useSimulationStore, useZonesStore } from '../../store';
 
 export function TopNavigation() {
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const toggleAnalytics = useUIStore((state) => state.toggleAnalytics);
+  const resetMap = useMapStore((state) => state.resetMap);
   const zones = useZonesStore((state) => state.zones);
   const isRunning = useSimulationStore((state) => state.isRunning);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const totalIncidents = zones.length;
   const activeRescueZones = zones.filter((z) => z.riskLevel === 'critical').length;
@@ -16,6 +20,7 @@ export function TopNavigation() {
         )
       : 0;
   const maxPriority = zones.length > 0 ? Math.max(...zones.map((z) => z.priorityScore)) : 0;
+  const isHome = location.pathname === '/';
 
   const metrics = [
     {
@@ -71,7 +76,18 @@ export function TopNavigation() {
         {[ 'Real-Time Activity', 'Prediction', 'Comparison'].map((tab) => (
           <button
             key={tab}
-            className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400 transition-colors hover:border-[#4FD1FF]/30 hover:text-slate-100"
+            type="button"
+            onClick={() => {
+              if (tab === 'Real-Time Activity') {
+                resetMap();
+                navigate('/');
+              }
+            }}
+            className={`rounded-lg border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] transition-all ${
+              tab === 'Real-Time Activity' && isHome
+                ? 'border-[#4FD1FF]/45 bg-[#4FD1FF]/12 text-[#4FD1FF] shadow-[0_0_24px_rgba(79,209,255,0.14)]'
+                : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-[#4FD1FF]/30 hover:bg-[#4FD1FF]/8 hover:text-slate-100'
+            }`}
           >
             {tab}
           </button>

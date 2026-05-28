@@ -32,7 +32,7 @@ const getMarkerPercent = (position = {}) => ({
   top: Number.parseFloat(position.top) || 50,
 });
 
-const coordinateFromPercent = (center, position, scale = 0.018) => {
+const coordinateFromPercent = (center, position, scale = 0.00045) => {
   const { left, top } = getMarkerPercent(position);
   const [lat, lng] = center;
 
@@ -42,7 +42,7 @@ const coordinateFromPercent = (center, position, scale = 0.018) => {
   ];
 };
 
-const coordinateFromPixels = (center, position, scale = 0.00055) => {
+const coordinateFromPixels = (center, position, scale = 0.00032) => {
   const x = Number(position?.x) || 150;
   const y = Number(position?.y) || 150;
   const [lat, lng] = center;
@@ -53,11 +53,11 @@ const coordinateFromPixels = (center, position, scale = 0.00055) => {
   ];
 };
 
-const createBuildingIcon = (building) => L.divIcon({
+const createBuildingIcon = (building, isSelected = false) => L.divIcon({
   className: '',
   html: `
-    <div class="flex items-center gap-2 rounded-full bg-[#0F1524]/90 px-3 py-2 border border-[#151D30] shadow-lg text-xs font-semibold text-slate-100 whitespace-nowrap">
-      <span class="block h-2.5 w-2.5 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.8)]"></span>
+    <div class="flex items-center gap-2 rounded-full ${isSelected ? 'bg-[#4FD1FF]/20 border-[#4FD1FF]' : 'bg-[#0F1524]/90 border-[#151D30]'} px-3 py-2 border shadow-lg text-xs font-semibold text-slate-100 whitespace-nowrap backdrop-blur-md">
+      <span class="block h-2.5 w-2.5 rounded-full ${isSelected ? 'bg-white' : 'bg-cyan-400'} shadow-[0_0_12px_rgba(34,211,238,0.8)]"></span>
       <span>${building.name}</span>
     </div>
   `,
@@ -69,9 +69,16 @@ function MapViewController({ center, zoom }) {
   const map = useMap();
 
   useEffect(() => {
+    const currentZoom = map.getZoom();
+    const zoomDelta = Math.abs(currentZoom - clampZoom(zoom));
+    const duration = Math.min(2.2, Math.max(1.15, 0.85 + zoomDelta * 0.18));
+
+    map.stop();
     map.flyTo(center, clampZoom(zoom), {
       animate: true,
-      duration: 1.4,
+      duration,
+      easeLinearity: 0.16,
+      noMoveStart: false,
     });
   }, [center, map, zoom]);
 
@@ -99,6 +106,7 @@ export function MapViewport({
     bearing,
     mapCenter,
     selectedCity,
+    selectedBuilding,
   } = useMapStore();
 
   const mode = propMode || currentView;
@@ -119,13 +127,13 @@ export function MapViewport({
         <CircleMarker
           key={item.id}
           center={item.coordinates}
-          radius={8}
+          radius={selectedCity?.id === item.id ? 14 : 8}
           pathOptions={{
             color: item.color,
             fillColor: item.color,
-            fillOpacity: 0.9,
-            opacity: 0.85,
-            weight: 2,
+            fillOpacity: selectedCity?.id === item.id ? 0.34 : 0.9,
+            opacity: selectedCity?.id === item.id ? 1 : 0.85,
+            weight: selectedCity?.id === item.id ? 4 : 2,
           }}
           eventHandlers={{ click: () => onCitySelect?.(item) }}
         >
@@ -160,8 +168,8 @@ export function MapViewport({
           {buildings.map((building) => (
             <Marker
               key={building.id}
-              position={coordinateFromPercent(cityCenter, building.markerPosition, 0.0024)}
-              icon={createBuildingIcon(building)}
+              position={coordinateFromPercent(cityCenter, building.markerPosition)}
+              icon={createBuildingIcon(building, selectedBuilding?.id === building.id)}
               eventHandlers={{ click: () => onBuildingSelect?.(building) }}
             />
           ))}

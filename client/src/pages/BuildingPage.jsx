@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ShieldAlert } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { ShieldAlert } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import TopNavigation from '../components/ui/TopNavigation';
 import AlertsPanel from '../components/alerts/AlertsPanel';
-import SimulationControls from '../components/ui/SimulationControls';
 import MapViewport from '../components/map/MapViewport';
 import mockAPI from '../services/api';
 import { getSeverityTextColor } from '../utils';
@@ -19,11 +18,8 @@ const riskColors = {
 
 export function BuildingPage() {
   const { cityId, buildingId } = useParams();
-  const navigate = useNavigate();
-  const [city, setCity] = useState(null);
   const [building, setBuilding] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const { setView, popView, currentView, selectedBuilding: storeBuilding } = useMapStore();
+  const { setView, currentView, selectedBuilding: storeBuilding } = useMapStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,24 +27,17 @@ export function BuildingPage() {
         mockAPI.fetchCityDetails(cityId),
         mockAPI.fetchBuilding(buildingId),
       ]);
-      setCity(cityData);
-      setBuilding(buildingData);
-      setLoading(false);
+      const cityBuilding = cityData?.buildings?.find((item) => item.id === buildingId);
+      const focusedBuilding = { ...cityBuilding, ...buildingData };
+      setBuilding(focusedBuilding);
 
       // Sync store only if we are not already in building view for THIS building
       if (currentView !== 'building' || storeBuilding?.id !== buildingId) {
-        setView('building', { city: cityData, building: buildingData });
+        setView('building', { city: cityData, building: focusedBuilding });
       }
     };
     fetchData();
-  }, [cityId, buildingId, setView]); // Remove currentView and storeBuilding from deps
-
-  const handleBack = () => {
-    // 1. Pop the last map state (returns to city view)
-    popView();
-    // 2. Navigate back to the city route
-    navigate(`/city/${cityId}`);
-  };
+  }, [cityId, buildingId, currentView, setView, storeBuilding?.id]);
 
   const floorData = building?.floors || [];
   const buildingChart = floorData.map((item) => ({

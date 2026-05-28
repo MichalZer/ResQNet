@@ -39,6 +39,14 @@ export function OverviewPage() {
     (a, b) => b.priorityScore - a.priorityScore,
   );
 
+  const focusCity = (city) => {
+    setSelectedCityId(city.id);
+    setView("city", { city });
+    window.setTimeout(() => {
+      navigate(`/city/${city.id}`);
+    }, 1050);
+  };
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#07111F] text-slate-100">
       <TopNavigation />
@@ -60,11 +68,7 @@ export function OverviewPage() {
                 <button
                   key={city.id}
                   type="button"
-                  onClick={() => {
-                    setSelectedCityId(city.id);
-                    setView("city", { city });
-                    navigate(`/city/${city.id}`);
-                  }}
+                  onClick={() => focusCity(city)}
                   className={`w-full rounded-xl border p-4 text-left transition-all ${
                     city.id === selectedCityId
                       ? "border-[#4FD1FF]/70 bg-[#4FD1FF]/10 shadow-[0_0_0_1px_rgba(79,209,255,0.16)]"
@@ -119,11 +123,7 @@ export function OverviewPage() {
             <MapViewport
               mode="world"
               cities={cities}
-              onCitySelect={(city) => {
-                setSelectedCityId(city.id);
-                setView("city", { city });
-                navigate(`/city/${city.id}`);
-              }}
+              onCitySelect={focusCity}
             />
             <AlertsPanel />
           
