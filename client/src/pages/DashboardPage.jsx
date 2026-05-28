@@ -4,7 +4,6 @@ import Sidebar from '../components/sidebar/Sidebar';
 import MapViewport from '../components/map/MapViewport';
 import AnalyticsPanel from '../components/analytics/AnalyticsPanel';
 import AlertsPanel from '../components/alerts/AlertsPanel';
-import SimulationControls from '../components/ui/SimulationControls';
 import InfoPanel from '../components/building/InfoPanel';
 import { useSimulationStore, useZonesStore, useAlertsStore } from '../store';
 import simulationService from '../services/simulation';
@@ -16,11 +15,10 @@ export function DashboardPage() {
     simulationTime,
     playbackSpeed,
     setSimulationTime,
-    incrementTime,
   } = useSimulationStore();
 
   const { setZones } = useZonesStore();
-  const { addAlert, clearAlerts } = useAlertsStore();
+  const { addAlert } = useAlertsStore();
 
   // Initialize simulation
   useEffect(() => {
@@ -65,31 +63,31 @@ export function DashboardPage() {
   }, [simulationTime, setZones, addAlert]);
 
   return (
-    <div className="min-h-screen bg-dark-bg text-dark-text flex flex-col overflow-hidden">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#07111F] text-slate-100">
       {/* Top Navigation */}
       <TopNavigation />
 
       {/* Main Layout */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex min-h-0 flex-1 gap-4 overflow-hidden p-4">
         {/* Sidebar */}
         <Sidebar />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden relative">
+        <div className="relative flex min-w-0 flex-1 flex-col gap-4 overflow-hidden">
           {/* Map Viewport */}
-          <div className="flex-1 overflow-hidden">
+          <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/10 bg-[#0D1726]/80 shadow-2xl">
             <MapViewport />
             {/* Info Panel */}
             <InfoPanel />
             {/* Alerts */}
             <AlertsPanel />
-            {/* Simulation Controls */}
-             {/*<SimulationControls />*/}
           </div>
 
           {/* Analytics Panel */}
-          <div className="h-40 overflow-hidden">
-            <AnalyticsPanel />
+          <div className="h-36 shrink-0 rounded-2xl border border-white/10 bg-[#0D1726]/85 p-3 shadow-2xl backdrop-blur-xl">
+            <div className="h-full overflow-hidden rounded-xl bg-[#07111F]/40">
+              <AnalyticsPanel />
+            </div>
           </div>
         </div>
       </div>

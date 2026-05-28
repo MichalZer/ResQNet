@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import TopNavigation from "../components/ui/TopNavigation";
 import AnalyticsPanel from "../components/analytics/AnalyticsPanel";
 import AlertsPanel from "../components/alerts/AlertsPanel";
-import SimulationControls from "../components/ui/SimulationControls";
 import MapViewport from "../components/map/MapViewport";
 import mockAPI from "../services/api";
+import { AlertTriangle, Crosshair } from "lucide-react";
 import { getSeverityTextColor } from "../utils";
 import { useMapStore } from "../store";
 
@@ -26,35 +26,34 @@ export function OverviewPage() {
       const data = await mockAPI.fetchCities();
       setCities(data);
       setLoading(false);
-      if (!data.find((city) => city.id === selectedCityId)) {
-        setSelectedCityId(data[0]?.id || "jerusalem");
-      }
+      setSelectedCityId((currentCityId) =>
+        data.find((city) => city.id === currentCityId)
+          ? currentCityId
+          : data[0]?.id || "jerusalem",
+      );
     };
     fetchCities();
   }, [setView]);
 
-  const selectedCity = cities.find((city) => city.id === selectedCityId);
   const sortedCities = [...cities].sort(
     (a, b) => b.priorityScore - a.priorityScore,
   );
 
   return (
-    <div className="flex h-screen w-screen m-0 p-0 bg-[#0B0F19] text-slate-100 overflow-hidden flex-col">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#07111F] text-slate-100">
       <TopNavigation />
 
-      <div className="flex-1 flex min-h-0 overflow-hidden">
-        <aside className="w-80 min-w-[20rem] bg-[#0F1524] border-r border-[#151D30] flex flex-col flex-shrink-0">
-          <div className="p-4 border-b border-[#151D30] bg-[#151D30]/30">
-            <h2 className="text-lg font-bold text-white">City Rank</h2>
-            <p className="text-xs text-slate-400">
-              Tap any marker to inspect a city.
-            </p>
+      <div className="flex min-h-0 flex-1 gap-4 overflow-hidden p-4">
+        <aside className="flex w-full max-w-[320px] shrink-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0D1726]/85 shadow-2xl backdrop-blur-xl max-lg:hidden">
+          <div className="border-b border-white/10 p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#4FD1FF]">National Triage</p>
+            <p className="mt-1 text-lg font-semibold text-white">City Priority</p>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
+          <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
             {loading ? (
               <div className="text-gray-400 text-sm">
-                Loading city overview…
+                Loading city overview...
               </div>
             ) : (
               sortedCities.map((city, index) => (
@@ -66,56 +65,57 @@ export function OverviewPage() {
                     setView("city", { city });
                     navigate(`/city/${city.id}`);
                   }}
-                  className={`w-full text-left p-4 rounded-3xl border ${
+                  className={`w-full rounded-xl border p-4 text-left transition-all ${
                     city.id === selectedCityId
-                      ? "border-emergency-cyan bg-[#0A1626]"
-                      : "border-[#24303f] bg-[#151D30] hover:border-emergency-cyan/80"
-                  } shadow-sm transition-all`}
+                      ? "border-[#4FD1FF]/70 bg-[#4FD1FF]/10 shadow-[0_0_0_1px_rgba(79,209,255,0.16)]"
+                      : "border-white/10 bg-white/[0.035] hover:border-[#4FD1FF]/45 hover:bg-white/[0.055]"
+                  }`}
                 >
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-sm font-semibold text-slate-100">
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <span className="text-sm font-semibold leading-tight text-slate-100">
                       {index + 1}. {city.name}
                     </span>
                     <span
-                      className={`text-[10px] uppercase tracking-[0.25em] font-bold ${getSeverityTextColor(city.riskLevel)}`}
+                      className={`rounded-md bg-[#07111F]/80 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.18em] ${getSeverityTextColor(city.riskLevel)}`}
                     >
                       {city.riskLevel}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 leading-snug">
-                    {city.summary}
-                  </p>
-                  <div className="mt-3 flex items-center justify-between text-[11px] text-gray-400">
-                    <span>{city.incidentCount} active incidents</span>
-                    <span>Score {city.priorityScore}</span>
+                  <div className="grid grid-cols-2 gap-3 text-[11px]">
+                    <div>
+                      <p className="uppercase tracking-[0.16em] text-slate-500">Incidents</p>
+                      <p className="mt-1 font-mono text-base font-bold text-white">{city.incidentCount}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="uppercase tracking-[0.16em] text-slate-500">Score</p>
+                      <p className="mt-1 font-mono text-base font-bold text-[#4FD1FF]">{city.priorityScore}</p>
+                    </div>
                   </div>
                 </button>
               ))
             )}
           </div>
 
-          <div className="p-4 border-t border-[#151D30] text-xs text-slate-400 space-y-2 bg-[#08121e]">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-2xl bg-[#08121e] p-3">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-gray-500">
-                  Critical
+          <div className="border-t border-white/10 bg-[#07111F]/45 p-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                <AlertTriangle className="mb-2 h-4 w-4 text-[#FF5A5A]" />
+                <p className="font-mono text-lg font-bold text-[#FF5A5A]">
+                  {cities.filter((city) => city.riskLevel === "critical").length}
                 </p>
-                <p className="text-emergency-red font-semibold">Red alerts</p>
+                <p className="text-[9px] uppercase tracking-[0.16em] text-slate-500">Critical</p>
               </div>
-              <div className="rounded-2xl bg-[#08121e] p-3">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-gray-500">
-                  Monitoring
-                </p>
-                <p className="text-emergency-cyan font-semibold">
-                  Live emergency feed
-                </p>
+              <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
+                <Crosshair className="mb-2 h-4 w-4 text-[#4FD1FF]" />
+                <p className="font-mono text-lg font-bold text-[#4FD1FF]">{cities.length}</p>
+                <p className="text-[9px] uppercase tracking-[0.16em] text-slate-500">Cities</p>
               </div>
             </div>
           </div>
         </aside>
 
-        <main className="flex-1 flex flex-col overflow-hidden">
-          <div className="relative flex-1 overflow-hidden">
+        <main className="flex min-w-0 flex-1 flex-col gap-4 overflow-hidden">
+          <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/10 bg-[#0D1726]/80 shadow-2xl">
             <MapViewport
               mode="world"
               cities={cities}
@@ -129,8 +129,8 @@ export function OverviewPage() {
           
           </div>
 
-          <div className="h-44 border-t border-[#151D30] bg-[#0F1524]">
-            <div className="h-full rounded-3xl bg-[#151D30] border border-[#24303f] p-4">
+          <div className="h-36 shrink-0 rounded-2xl border border-white/10 bg-[#0D1726]/85 p-3 shadow-2xl backdrop-blur-xl">
+            <div className="h-full overflow-hidden rounded-xl bg-[#07111F]/40">
               <AnalyticsPanel />
             </div>
           </div>

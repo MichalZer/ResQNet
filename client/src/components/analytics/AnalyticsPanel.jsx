@@ -16,11 +16,14 @@ export function AnalyticsPanel() {
   }, []);
 
   return (
-    <div className="h-full bg-dark-card border-t border-dark-border flex flex-col p-4 overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden bg-transparent p-3">
       {/* Header */}
-      <div className="mb-4">
-        <h3 className="text-sm font-bold text-dark-text mb-1">Timeline Analytics</h3>
-        <p className="text-xs text-gray-400">Last 24 hours activity</p>
+      <div className="mb-2 flex items-end justify-between gap-4">
+        <div>
+          <h3 className="mb-1 text-sm font-bold text-white">Timeline Analytics</h3>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Last 24 hours</p>
+        </div>
+        <p className="text-[10px] uppercase tracking-[0.16em] text-[#4FD1FF]">Auto update</p>
       </div>
 
       {/* Charts */}
@@ -29,41 +32,36 @@ export function AnalyticsPanel() {
           <p className="text-gray-400 text-sm">Loading analytics...</p>
         </div>
       ) : (
-        <div className="flex-1 flex gap-4">
+        <div className="flex min-h-0 flex-1 gap-4">
           {/* Incidents Chart */}
           <div className="flex-1 min-h-0">
-            <p className="text-xs text-gray-400 mb-2">Incidents</p>
+            <p className="mb-1 text-xs text-slate-400">Incidents</p>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={timelineData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
                 <XAxis dataKey="time" tick={{ fontSize: 10 }} stroke="#666" />
                 <YAxis tick={{ fontSize: 10 }} stroke="#666" />
-                <Tooltip contentStyle={{ backgroundColor: '#0F1524', border: '1px solid #222' }} />
-                <Bar dataKey="incidents" fill="#10B981" />
+                <Tooltip contentStyle={{ backgroundColor: '#0D1726', border: '1px solid rgba(255,255,255,0.12)' }} />
+                <Bar dataKey="incidents" fill="#4FD1FF" />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
           {/* Priority Score Chart */}
           <div className="flex-1 min-h-0">
-            <p className="text-xs text-gray-400 mb-2">Priority Score</p>
+            <p className="mb-1 text-xs text-slate-400">Priority Score</p>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={timelineData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
                 <XAxis dataKey="time" tick={{ fontSize: 10 }} stroke="#666" />
                 <YAxis tick={{ fontSize: 10 }} stroke="#666" />
-                <Tooltip contentStyle={{ backgroundColor: '#0F1524', border: '1px solid #222' }} />
-                <Area type="monotone" dataKey="priority" stroke="#F97316" fill="#F97316" fillOpacity={0.3} />
+                <Tooltip contentStyle={{ backgroundColor: '#0D1726', border: '1px solid rgba(255,255,255,0.12)' }} />
+                <Area type="monotone" dataKey="priority" stroke="#FF5A5A" fill="#FF5A5A" fillOpacity={0.22} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
       )}
-
-      {/* Footer */}
-      <div className="mt-2 text-xs text-gray-500 border-t border-dark-border pt-2">
-        <p>Auto-updating every 5 seconds</p>
-      </div>
     </div>
   );
 }
