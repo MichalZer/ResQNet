@@ -1,8 +1,6 @@
-import json
-from pathlib import Path
 
-DATA_PATH = Path("/../data/buildingData.json")
+from core.database import db
 
 def get_building_data():
-    with open(DATA_PATH, "r") as f:
-        return json.load(f)
+    buildings = list(db.buildings.find({}, {"_id": 0}))
+    return buildings
