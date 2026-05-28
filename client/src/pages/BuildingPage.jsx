@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ShieldAlert } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 import TopNavigation from '../components/ui/TopNavigation';
 import AlertsPanel from '../components/alerts/AlertsPanel';
-import MapViewport from '../components/map/MapViewport';
+import Building3DMap from '../components/map/Building3DMap';
 import mockAPI from '../services/api';
 import { getSeverityTextColor } from '../utils';
 import { useMapStore } from '../store';
@@ -28,7 +37,26 @@ export function BuildingPage() {
         mockAPI.fetchBuilding(buildingId),
       ]);
       const cityBuilding = cityData?.buildings?.find((item) => item.id === buildingId);
-      const focusedBuilding = { ...cityBuilding, ...buildingData };
+
+      // Normalize/enrich building data for the map component
+      const floorsArray = buildingData?.floors ?? [];
+      const floorsCount = floorsArray?.length || buildingData?.maxFloors || 10;
+      const criticalFloors = (floorsArray || [])
+        .map((f, i) => (f?.score >= 80 ? i + 1 : null))
+        .filter(Boolean);
+
+      const focusedBuilding = {
+        ...cityBuilding,
+        ...buildingData,
+        // Top-level coordinates used by Building3DMap (convenience)
+        lng: buildingData?.coordinates?.lng || cityData?.coordinates?.lng || 35.2137,
+        lat: buildingData?.coordinates?.lat || cityData?.coordinates?.lat || 31.7683,
+        // Ensure there's a floors array and counts for downstream logic
+        floors: floorsArray,
+        floorsCount,
+        criticalFloors,
+      };
+
       setBuilding(focusedBuilding);
 
       // Sync store only if we are not already in building view for THIS building
@@ -36,6 +64,7 @@ export function BuildingPage() {
         setView('building', { city: cityData, building: focusedBuilding });
       }
     };
+
     fetchData();
   }, [cityId, buildingId, currentView, setView, storeBuilding?.id]);
 
@@ -52,11 +81,9 @@ export function BuildingPage() {
       <div className="flex-1 flex min-h-0 overflow-hidden">
         <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <div className="relative flex-1 min-h-0 overflow-hidden">
-            <MapViewport
-              mode="building"
-            />
+            {/* 3D Building Visualization */}
+            <Building3DMap buildingData={building} />
             <AlertsPanel />
-            
           </div>
 
           <section className="border-t border-[#151D30] bg-[#0F1524] p-6">
@@ -65,8 +92,12 @@ export function BuildingPage() {
                 <div className="rounded-3xl border border-[#151D30] bg-[#08121e] p-6 shadow-xl">
                   <div className="flex items-center justify-between mb-6">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.24em] text-slate-400">Building Rescue Overview</p>
-                      <h2 className="text-xl font-bold text-white">{building?.name || 'Rescue Matrix'}</h2>
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
+                        Building Rescue Overview
+                      </p>
+                      <h2 className="text-xl font-bold text-white">
+                        {building?.name || 'Rescue Matrix'}
+                      </h2>
                     </div>
                     <div className="text-right text-xs text-slate-400">
                       <p>Estimated trapped</p>
@@ -75,25 +106,47 @@ export function BuildingPage() {
                   </div>
 
                   <div className="grid grid-cols-4 gap-4">
-                    {floorData.map((floor) => (
-                      <div key={floor.level} className="rounded-3xl border border-[#151D30] bg-[#0c1721] p-4 text-center">
-                        <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400">Floor {floor.level}</p>
+                    {floorData.map((floor) => {
+                      const isCriticalFloor = building?.criticalFloors?.includes(floor.level);
+                      return (
                         <div
-                          className="mt-4 flex h-24 flex-col items-center justify-center rounded-3xl border border-white/5 bg-[#07111F]"
-                          style={{ boxShadow: `inset 0 0 42px ${riskScoreColor(floor.score)}24` }}
+                          key={floor.level}
+                          className={`rounded-3xl border p-4 text-center ${
+                            isCriticalFloor ? 'border-[#FF5A5A] bg-[#3d1512]' : 'border-[#151D30] bg-[#0c1721]'
+                          }`}
                         >
-                          <div className="font-mono text-3xl font-bold text-white">{floor.score}%</div>
-                          <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">Risk</div>
+                          <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400">
+                            Floor {floor.level}
+                          </p>
+                          <div
+                            className={`mt-4 flex h-24 flex-col items-center justify-center rounded-3xl border ${
+                              isCriticalFloor ? 'border-[#FF5A5A]/30 bg-[#1a0f0a]' : 'border-white/5 bg-[#07111F]'
+                            }`}
+                            style={{ boxShadow: `inset 0 0 42px ${riskScoreColor(floor.score)}24` }}
+                          >
+                            <div className="font-mono text-3xl font-bold text-white">{floor.score}%</div>
+                            <div
+                              className={`mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                                isCriticalFloor ? 'text-[#FF5A5A]' : 'text-slate-500'
+                              }`}
+                            >
+                              {isCriticalFloor ? 'CRITICAL' : 'Risk'}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="rounded-3xl border border-[#151D30] bg-[#08121e] p-6">
-                    <p className="text-xs uppercase tracking-[0.24em] text-slate-400 mb-3">Rescue priority heatmap</p>
-                    <div className="h-48">
+                    <p className="text-xs uppercase tracking-[0.24em] text-slate-400 mb-3">
+                      Rescue priority heatmap
+                    </p>
+
+                    {/* FIX: Ensure parent has fixed height so ResponsiveContainer can measure */}
+                    <div className="h-48 w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={buildingChart} margin={{ top: 0, right: 0, left: -10, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#19202d" />
@@ -141,7 +194,9 @@ export function BuildingPage() {
                       <div key={alert.id} className="rounded-3xl bg-[#0b1524] p-4 border border-[#151D30]">
                         <div className="flex items-center justify-between gap-2 text-sm font-semibold text-white mb-2">
                           <span>{alert.message}</span>
-                          <span className={`text-[10px] uppercase ${getSeverityTextColor(alert.severity)}`}>{alert.severity}</span>
+                          <span className={`text-[10px] uppercase ${getSeverityTextColor(alert.severity)}`}>
+                            {alert.severity}
+                          </span>
                         </div>
                         <p className="text-xs text-gray-500">{new Date(alert.timestamp).toLocaleTimeString()}</p>
                       </div>
