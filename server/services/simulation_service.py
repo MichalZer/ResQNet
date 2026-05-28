@@ -16,11 +16,12 @@ def get_start_simulation():
 
 
 def get_rescue_scores():
-    scores = list(
-        db.rescue_scores.find({}, {"_id": 0})
-    )
+    # scores = list(
+    #     db.rescue_scores.find({}, {"_id": 0})
+    # )
 
-    return scores
+    #return scores
+    return {"banana": "yellow"}
 
 
 def get_simulation_timeline():

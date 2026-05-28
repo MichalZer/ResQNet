@@ -441,7 +441,7 @@ wifi_events = [
         "connectedDevices": 2
     }
 ]
-
+#rescue-scores = 
 
 db.buildings.insert_one(building_data)
 db.cellular_events.insert_many(cellular_events)
