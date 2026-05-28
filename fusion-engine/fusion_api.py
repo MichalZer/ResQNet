@@ -3,7 +3,7 @@ from simulation.simulation_fusion import (
 )
 
 
-def get_rescue_scores(
+def calculate_rescue_scores(
     signals,
     simulation_time,
     context=None

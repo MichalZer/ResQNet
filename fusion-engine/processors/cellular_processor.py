@@ -12,7 +12,7 @@ def process_cellular_events(events):
 
     for event in events:
 
-        if event["eventType"] == "signal_lost":
+        if event.get("eventType") == "signal_lost":
             lost_signals += 1
 
     # Score logic

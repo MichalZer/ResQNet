@@ -13,7 +13,7 @@ def process_wearable_events(events):
 
     for event in events:
 
-        event_type = event["eventType"]
+        event_type = event.get("eventType")
 
         if event_type == "high_heart_rate":
             high_heart_rate_detected = True

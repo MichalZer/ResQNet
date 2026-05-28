@@ -12,7 +12,7 @@ def process_smart_meter_events(events):
     meter_offline_detected = False
 
     for event in events:
-        event_type = event["eventType"]
+        event_type = event.get("eventType")
 
         if event_type == "high_usage":
             high_usage_detected = True

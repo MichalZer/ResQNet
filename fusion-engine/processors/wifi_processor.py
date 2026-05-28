@@ -12,10 +12,10 @@ def process_wifi_events(events):
     last_connected_devices = 0
 
     for event in events:
-        if event["eventType"] == "router_online":
+        if event.get("eventType") == "router_online":
             last_connected_devices += event.get("connectedDevices", 0)
 
-        if event["eventType"] == "router_offline":
+        if event.get("eventType") == "router_offline":
             offline_routers += 1
 
     if offline_routers > 0:
