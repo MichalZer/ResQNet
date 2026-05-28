@@ -19,11 +19,11 @@ def process_wifi_events(events):
             offline_routers += 1
 
     if offline_routers > 0:
-        score += 40
+        score += 60
         evidence.append("WiFi router went offline")
 
     if last_connected_devices > 0:
-        score += min(last_connected_devices * 5, 30)
+        score += min(last_connected_devices * 8, 40)
         evidence.append(f"{last_connected_devices} devices were connected to WiFi before the event")
 
     score = min(score, 100)

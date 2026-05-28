@@ -16,7 +16,7 @@ def process_cellular_events(events):
             lost_signals += 1
 
     # Score logic
-    score += lost_signals * 15
+    score += lost_signals * 35
 
     # Prevent score from becoming too high
     score = min(score, 100)

@@ -1,4 +1,8 @@
-from scoring.rescue_score import calculate_rescue_score
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from scoring.multi_area_fusion import calculate_multi_area_scores
 
 
 cellular_events = [
@@ -9,11 +13,12 @@ cellular_events = [
         "areaId": "floor4_zoneA",
         "deviceId": "phone_104"
     },
+
     {
         "source": "cellular",
-        "eventType": "signal_lost",
-        "timestamp": "2026-05-27T10:42:30",
-        "areaId": "floor4_zoneA",
+        "eventType": "signal_active",
+        "timestamp": "2026-05-27T10:40:00",
+        "areaId": "floor2_zoneB",
         "deviceId": "phone_205"
     }
 ]
@@ -55,6 +60,14 @@ collapse_events = [
         "timestamp": "2026-05-27T10:42:00",
         "areaId": "floor4_zoneA",
         "severity": "high"
+    },
+
+    {
+        "source": "collapse",
+        "eventType": "structural_damage",
+        "timestamp": "2026-05-27T10:42:00",
+        "areaId": "floor5_zoneC",
+        "severity": "low"
     }
 ]
 
@@ -63,7 +76,8 @@ context = {
     "isReligiousArea": False
 }
 
-result = calculate_rescue_score(
+
+results = calculate_multi_area_scores(
     cellular_events,
     wifi_events,
     smart_meter_events,
@@ -72,4 +86,7 @@ result = calculate_rescue_score(
     context
 )
 
-print(result)
+print("\n=== MULTI AREA RESULTS ===\n")
+
+for result in results:
+    print(result)

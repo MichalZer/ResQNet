@@ -23,14 +23,14 @@ def process_wearable_events(events):
 
     # High heart rate before disconnect
     if high_heart_rate_detected:
-        score += 50
+        score += 70
         evidence.append(
             "Wearable detected elevated heart rate"
         )
 
     # Device disconnected
     if disconnected_devices > 0:
-        score += disconnected_devices * 20
+        score += disconnected_devices * 35
 
         evidence.append(
             f"{disconnected_devices} wearable devices disconnected"

@@ -13,19 +13,19 @@ def process_collapse_events(events):
         severity = event.get("severity", "low")
 
         if severity == "low":
-            score += 20
+            score += 30
             evidence.append(
                 "Minor structural damage detected"
             )
 
         elif severity == "medium":
-            score += 50
+            score += 70
             evidence.append(
                 "Moderate structural damage detected"
             )
 
         elif severity == "high":
-            score += 80
+            score += 100
             evidence.append(
                 "Severe structural damage detected"
             )

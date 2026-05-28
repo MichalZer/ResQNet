@@ -21,11 +21,11 @@ def process_smart_meter_events(events):
             meter_offline_detected = True
 
     if high_usage_detected:
-        score += 45
+        score += 60
         evidence.append("High electricity usage detected before the event")
 
     if meter_offline_detected:
-        score += 35
+        score += 50
         evidence.append("Smart meter went offline after the event")
 
     score = min(score, 100)
