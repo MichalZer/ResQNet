@@ -53,6 +53,31 @@ const coordinateFromPixels = (center, position, scale = 0.00032) => {
   ];
 };
 
+const buildingPosition = (cityCenter, building) => (
+  building?.coordinates
+    ? toLeafletCenter(building.coordinates)
+    : coordinateFromPercent(cityCenter, building?.markerPosition)
+);
+
+const dangerProfile = (building = {}) => {
+  const score = Number(building.priorityScore ?? building.rescueScore ?? 50);
+  const severityMultiplier = {
+    critical: 1.3,
+    high: 1.1,
+    medium: 0.9,
+    low: 0.72,
+  }[building.riskLevel] || 0.9;
+
+  const radius = Math.round((38 + score * 0.92) * severityMultiplier);
+  const opacity = Math.min(0.36, 0.1 + score / 420);
+
+  return {
+    radius,
+    opacity,
+    color: riskColor(building.riskLevel),
+  };
+};
+
 const createBuildingIcon = (building, isSelected = false) => L.divIcon({
   className: '',
   html: `
@@ -149,30 +174,57 @@ export function MapViewport({
     if (mode === 'city') {
       return (
         <>
-          {incidentZones.map((zone) => (
-            <Circle
-              key={zone.id}
-              center={coordinateFromPixels(cityCenter, zone.coordinates)}
-              radius={zone.radius * 8}
-              pathOptions={{
-                color: riskColor(zone.riskLevel),
-                fillColor: riskColor(zone.riskLevel),
-                fillOpacity: 0.22,
-                opacity: 0.65,
-                weight: 2,
-              }}
-            >
-              <Tooltip direction="top">{zone.name}</Tooltip>
-            </Circle>
-          ))}
+          
           {buildings.map((building) => (
             <Marker
               key={building.id}
-              position={coordinateFromPercent(cityCenter, building.markerPosition)}
+              position={buildingPosition(cityCenter, building)}
               icon={createBuildingIcon(building, selectedBuilding?.id === building.id)}
               eventHandlers={{ click: () => onBuildingSelect?.(building) }}
             />
           ))}
+        </>
+      );
+    }
+
+    if (mode === 'building' && selectedBuilding) {
+      const center = buildingPosition(selectedCity?.coordinates || leafletCenter, selectedBuilding);
+      const danger = dangerProfile(selectedBuilding);
+
+      return (
+        <>
+          <Circle
+            center={center}
+            radius={danger.radius * 1.65}
+            pathOptions={{
+              color: danger.color,
+              fillColor: danger.color,
+              fillOpacity: Math.max(0.05, danger.opacity * 0.28),
+              opacity: 0.16,
+              weight: 1,
+            }}
+          />
+          <Circle
+            center={center}
+            radius={danger.radius}
+            pathOptions={{
+              color: danger.color,
+              fillColor: danger.color,
+              fillOpacity: danger.opacity,
+              opacity: 0.84,
+              weight: 2,
+            }}
+          >
+            <Tooltip direction="top" offset={[0, -10]} permanent>
+              <span className="text-xs font-bold uppercase tracking-[0.14em]">
+                {selectedBuilding.name} / {Math.round(selectedBuilding.priorityScore ?? selectedBuilding.rescueScore ?? 0)}% danger
+              </span>
+            </Tooltip>
+          </Circle>
+          <Marker
+            position={center}
+            icon={createBuildingIcon(selectedBuilding, true)}
+          />
         </>
       );
     }

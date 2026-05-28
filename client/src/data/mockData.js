@@ -123,6 +123,7 @@ export const cityBuildings = {
       trapped: 3,
       floors: 10,
       markerPosition: { left: '36%', top: '20%' },
+      coordinates: [34.9833, 32.8075],
       summary: 'Emergency hotspots concentrated near the base floors.',
     },
   ],
@@ -145,6 +146,7 @@ export const cityBuildings = {
       trapped: 0,
       floors: 6,
       markerPosition: { left: '45%', top: '51%' },
+      coordinates: [34.6409, 31.8010],
       summary: 'Light damage, surveillance teams monitoring roof sensors.',
     },
   ],
@@ -356,6 +358,28 @@ export const buildingDetails = {
       'Thermal sensors stable',
     ],
   },
+  'haifa-B': {
+    id: 'haifa-B',
+    name: 'Building B',
+    cityId: 'haifa',
+    rescueScore: 64,
+    estimatedTrapped: 3,
+    signalLoss: '34%',
+    recommendation: 'Stabilize base-floor access and dispatch harbor-side search teams.',
+    floors: [
+      { level: 10, risk: 'medium', status: 'Base-floor hotspot', score: 66 },
+      { level: 8, risk: 'medium', status: 'Signal degradation', score: 63 },
+      { level: 5, risk: 'low', status: 'Route monitored', score: 52 },
+    ],
+    alerts: [
+      { id: 'ALERT-HB-1', severity: 'warning', message: 'Base-floor emergency hotspot confirmed', timestamp: new Date().toISOString() },
+    ],
+    evidence: [
+      'Ground sensors reporting vibration',
+      'Partial radio degradation near harbor route',
+      'Thermal readings concentrated at lower floors',
+    ],
+  },
   'ashdod-A': {
     id: 'ashdod-A',
     name: 'Building A',
@@ -374,6 +398,28 @@ export const buildingDetails = {
     evidence: [
       'Local sensors nominal',
       'No active entrapment reports',
+    ],
+  },
+  'ashdod-B': {
+    id: 'ashdod-B',
+    name: 'Building B',
+    cityId: 'ashdod',
+    rescueScore: 48,
+    estimatedTrapped: 0,
+    signalLoss: '14%',
+    recommendation: 'Maintain perimeter surveillance and keep logistics response team on standby.',
+    floors: [
+      { level: 6, risk: 'low', status: 'Roof sensor watch', score: 48 },
+      { level: 4, risk: 'low', status: 'Access clear', score: 42 },
+      { level: 2, risk: 'low', status: 'Stable', score: 35 },
+    ],
+    alerts: [
+      { id: 'ALERT-AB-1', severity: 'warning', message: 'Roof sensor anomaly under observation', timestamp: new Date().toISOString() },
+    ],
+    evidence: [
+      'Surveillance sensors active',
+      'No trapped civilian reports',
+      'Logistics access remains clear',
     ],
   },
 };

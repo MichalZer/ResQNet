@@ -9,11 +9,11 @@ import mockAPI from '../services/api';
 import { getSeverityTextColor } from '../utils';
 import { useMapStore } from '../store';
 
-const riskColors = {
-  critical: '#EF4444',
-  high: '#F97316',
-  medium: '#FBBF24',
-  low: '#10B981',
+const riskScoreColor = (score = 0) => {
+  if (score >= 85) return '#EF4444';
+  if (score >= 70) return '#F97316';
+  if (score >= 50) return '#FBBF24';
+  return '#10B981';
 };
 
 export function BuildingPage() {
@@ -43,7 +43,6 @@ export function BuildingPage() {
   const buildingChart = floorData.map((item) => ({
     name: `F${item.level}`,
     score: item.score,
-    risk: item.risk,
   }));
 
   return (
@@ -79,10 +78,13 @@ export function BuildingPage() {
                     {floorData.map((floor) => (
                       <div key={floor.level} className="rounded-3xl border border-[#151D30] bg-[#0c1721] p-4 text-center">
                         <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400">Floor {floor.level}</p>
-                        <div className={`mt-4 h-24 rounded-3xl ${floor.risk === 'critical' ? 'bg-emergency-red/20' : floor.risk === 'high' ? 'bg-emergency-orange/20' : floor.risk === 'medium' ? 'bg-emergency-yellow/20' : 'bg-emergency-green/20'}`}>
-                          <div className="h-full flex items-center justify-center text-sm font-semibold text-white">{floor.status}</div>
+                        <div
+                          className="mt-4 flex h-24 flex-col items-center justify-center rounded-3xl border border-white/5 bg-[#07111F]"
+                          style={{ boxShadow: `inset 0 0 42px ${riskScoreColor(floor.score)}24` }}
+                        >
+                          <div className="font-mono text-3xl font-bold text-white">{floor.score}%</div>
+                          <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">Risk</div>
                         </div>
-                        <p className="mt-3 text-xs text-gray-400">Priority {floor.score}%</p>
                       </div>
                     ))}
                   </div>
@@ -100,7 +102,7 @@ export function BuildingPage() {
                           <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #273449' }} />
                           <Bar dataKey="score" fill="#06b6d4">
                             {buildingChart.map((entry) => (
-                              <Cell key={entry.name} fill={riskColors[entry.risk] || '#06b6d4'} />
+                              <Cell key={entry.name} fill={riskScoreColor(entry.score)} />
                             ))}
                           </Bar>
                         </BarChart>

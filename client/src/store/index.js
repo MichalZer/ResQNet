@@ -7,6 +7,7 @@ const getMarkerPercent = (position = {}) => ({
 
 const buildingCoordinateFromCity = (city, building, scale = 0.00045) => {
   if (!city?.coordinates || !building?.markerPosition) return null;
+  if (building.coordinates) return building.coordinates;
 
   const { left, top } = getMarkerPercent(building.markerPosition);
   const [lat, lng] = city.coordinates;
