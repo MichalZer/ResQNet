@@ -25,7 +25,7 @@ const riskColor = (riskLevel) => {
 
 const toLeafletCenter = ([lng, lat]) => [lat, lng];
 
-const clampZoom = (zoom) => Math.min(Math.max(zoom, 3), 18);
+const clampZoom = (zoom) => Math.min(Math.max(zoom, 7.8), 18);
 
 const getMarkerPercent = (position = {}) => ({
   left: Number.parseFloat(position.left) || 50,

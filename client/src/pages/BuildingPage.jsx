@@ -68,7 +68,7 @@ export function BuildingPage() {
               mode="building"
             />
             <AlertsPanel />
-            <SimulationControls />
+            
           </div>
 
           <section className="border-t border-[#151D30] bg-[#0F1524] p-6">

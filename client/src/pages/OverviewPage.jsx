@@ -126,7 +126,7 @@ export function OverviewPage() {
               }}
             />
             <AlertsPanel />
-            <SimulationControls />
+          
           </div>
 
           <div className="h-44 border-t border-[#151D30] bg-[#0F1524]">

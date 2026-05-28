@@ -38,7 +38,7 @@ export function TopNavigation() {
 
       {/* Center - Tabs */}
       <div className="flex-1 flex gap-6 ml-8">
-        {['Overview', 'Real-Time Activity', 'Prediction', 'Comparison'].map((tab) => (
+        {[ 'Real-Time Activity', 'Prediction', 'Comparison'].map((tab) => (
           <button
             key={tab}
             className={`text-sm font-semibold pb-2 border-b-2 transition-colors ${

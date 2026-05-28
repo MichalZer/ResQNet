@@ -65,16 +65,14 @@ export function DashboardPage() {
   }, [simulationTime, setZones, addAlert]);
 
   return (
-    <div className="flex h-screen w-screen bg-[#0B0F19] text-slate-100 overflow-hidden m-0 p-0">
+    <div className="min-h-screen bg-dark-bg text-dark-text flex flex-col overflow-hidden">
       {/* Top Navigation */}
       <TopNavigation />
 
       {/* Main Layout */}
-      <div className="absolute inset-0 pt-16 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
-        <div className="w-80 min-w-[20rem] bg-[#0F1524]/95 border-r border-[#151D30] overflow-y-auto">
-          <Sidebar />
-        </div>
+        <Sidebar />
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
@@ -90,7 +88,7 @@ export function DashboardPage() {
           </div>
 
           {/* Analytics Panel */}
-          <div className="h-40 bg-[#0F1524] border-t border-[#151D30] overflow-hidden">
+          <div className="h-40 overflow-hidden">
             <AnalyticsPanel />
           </div>
         </div>

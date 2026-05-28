@@ -168,7 +168,7 @@ export function CityPage() {
 
            
             <AlertsPanel />
-            <SimulationControls />
+           
           </div>
 
           {/* Analytics HUD */}
