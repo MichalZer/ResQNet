@@ -65,27 +65,8 @@ export function BuildingPage() {
         <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
           <div className="relative flex-1 min-h-0 overflow-hidden">
             <MapViewport
-              mode="building"
-              buildings={city?.buildings || []}
+            
             />
-
-            <div className="absolute left-8 top-8 rounded-3xl border border-[#151D30] bg-[#0F1524]/95 p-5 max-w-sm shadow-2xl backdrop-blur-xl">
-              <div className="flex items-center justify-between gap-3 mb-4">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="rounded-full bg-[#07101e] p-2 text-slate-400 hover:text-white transition"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </button>
-                <span className={`text-[10px] uppercase tracking-[0.25em] font-semibold ${getSeverityTextColor(building?.riskLevel || 'critical')}`}>
-                  {building?.riskLevel?.toUpperCase() || 'CRITICAL'}
-                </span>
-              </div>
-              <h1 className="text-2xl font-bold text-white">{building?.name || 'Building View'}</h1>
-              <p className="mt-3 text-sm text-slate-300 leading-relaxed">{building?.recommendation || 'Tactical rescue view with priority heatmap and live alert pulse.'}</p>
-            </div>
-
             <AlertsPanel />
             <SimulationControls />
           </div>

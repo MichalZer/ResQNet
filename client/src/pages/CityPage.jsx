@@ -166,42 +166,7 @@ export function CityPage() {
                 }}
               />
 
-            {/* Float Overlay: City Intel */}
-            <div className="absolute left-8 top-8 rounded-[2.5rem] border border-[#151D30] bg-[#0F1524]/95 p-8 max-w-sm shadow-2xl backdrop-blur-xl pointer-events-auto border-l-4 border-l-emergency-cyan text-center">
-              <div className="flex flex-col items-center gap-4 mb-5">
-                <div className="p-3 bg-emergency-cyan/10 rounded-2xl border border-emergency-cyan/20">
-                  <Radio className="w-6 h-6 text-emergency-cyan animate-pulse" />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-black mb-1">Sector Intelligence</p>
-                  <h1 className="text-3xl font-black text-white leading-tight uppercase italic tracking-tighter">
-                    {city?.name || 'SYNCING...'}
-                  </h1>
-                </div>
-              </div>
-              
-              <p className="text-xs text-slate-300 leading-relaxed font-semibold italic border-l-2 border-[#24303f] pl-4 mb-6 mx-auto max-w-[28rem]">
-                "{city?.detail || 'Analyzing structural integrity and signal triangulation across urban corridors...'}"
-              </p>
-              
-              <div className="grid grid-cols-2 gap-4 text-left">
-                <div className="rounded-2xl bg-[#151D30] p-4 border border-[#24303f] group hover:border-emergency-cyan/30 transition-colors">
-                  <p className="text-[9px] uppercase tracking-widest text-slate-500 font-bold mb-2">Total Buildings</p>
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-2xl font-black text-white leading-none">{buildings.length}</span>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">OBJECTIVES</span>
-                  </div>
-                </div>
-                <div className="rounded-2xl bg-[#151D30] p-4 border border-[#24303f] group hover:border-emergency-yellow/30 transition-colors">
-                  <p className="text-[9px] uppercase tracking-widest text-slate-500 font-bold mb-2">Alert Zones</p>
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-2xl font-black text-white leading-none">{city?.incidentZones?.length || 0}</span>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">CRITICAL</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+           
             <AlertsPanel />
             <SimulationControls />
           </div>
