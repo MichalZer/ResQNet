@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from fusion_api import get_rescue_scores
+from fusion_api import calculate_rescue_scores
 
 
 signals = {
@@ -78,7 +78,7 @@ context = {
 for simulation_time in ["10:40", "10:42", "10:43", "10:45"]:
     print(f"\n=== FUSION API RESULTS AT {simulation_time} ===")
 
-    results = get_rescue_scores(
+    results = calculate_rescue_scores(
         signals=signals,
         simulation_time=simulation_time,
         context=context
