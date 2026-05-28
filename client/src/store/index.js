@@ -1,25 +1,99 @@
 import { create } from 'zustand';
 
-export const useMapStore = create((set) => ({
-  // Map state
-  zoom: 13,
+export const useMapStore = create((set, get) => ({
+  // Navigation & View State
+  currentView: 'world', // 'world' | 'city' | 'building'
+  viewStack: [], // Tracks navigation history for back-button popping
+  
+  // Map configuration state
+  zoom: 5.5,
   pitch: 45,
-  bearing: 0,
+  bearing: 20,
+  mapCenter: [34.8854, 31.7844], // Default Israel center (lon, lat)
+  
+  // Selection state
+  selectedCity: null,
   selectedBuilding: null,
   selectedZone: null,
-  mapCenter: [-118.2437, 34.0522], // LA default
 
   // Actions
   setZoom: (zoom) => set({ zoom }),
   setPitch: (pitch) => set({ pitch }),
   setBearing: (bearing) => set({ bearing }),
-  setSelectedBuilding: (building) => set({ selectedBuilding: building }),
-  setSelectedZone: (zone) => set({ selectedZone: zone }),
   setMapCenter: (center) => set({ mapCenter: center }),
+
+  /**
+   * Set the current view level and update the map viewport accordingly
+   * @param {'world' | 'city' | 'building'} view 
+   * @param {Object} data Associated data (city, building)
+   */
+  setView: (view, data = {}) => {
+    const { currentView, viewStack, zoom, pitch, bearing, mapCenter, selectedCity, selectedBuilding } = get();
+    
+    // Don't push to stack if we're already at this view
+    const newStack = [...viewStack];
+    if (currentView !== view) {
+      newStack.push({
+        view: currentView,
+        data: { city: selectedCity, building: selectedBuilding },
+        viewport: { zoom, pitch, bearing, center: mapCenter }
+      });
+    }
+
+    let newViewport = { zoom: 5.5, pitch: 45, bearing: 20, center: [34.8854, 31.7844] };
+
+    if (view === 'city' && data.city) {
+      // Convert [lat, lon] to [lon, lat] without mutation
+      const coords = [...data.city.coordinates].reverse();
+      newViewport = { zoom: 10, pitch: 45, bearing: 20, center: coords };
+    } else if (view === 'building' && data.building) {
+      // Building zoom level
+      const coords = data.building.markerPosition ? 
+        [35.2137, 31.7683] : // Default to Jerusalem area if not specified
+        [34.8854, 31.7844];
+      newViewport = { zoom: 16.5, pitch: 60, bearing: -15, center: coords };
+    }
+
+    set({
+      currentView: view,
+      viewStack: newStack,
+      selectedCity: data.city || null,
+      selectedBuilding: data.building || null,
+      ...newViewport,
+      mapCenter: newViewport.center
+    });
+  },
+
+  /**
+   * Pop the last state from the stack to navigate back one level
+   */
+  popView: () => {
+    const { viewStack } = get();
+    if (viewStack.length === 0) return null;
+
+    const lastState = viewStack[viewStack.length - 1];
+    const newStack = viewStack.slice(0, -1);
+
+    set({
+      currentView: lastState.view,
+      viewStack: newStack,
+      selectedCity: lastState.data.city,
+      selectedBuilding: lastState.data.building,
+      ...lastState.viewport,
+      mapCenter: lastState.viewport.center
+    });
+
+    return lastState;
+  },
+
   resetMap: () => set({
-    zoom: 13,
+    currentView: 'world',
+    viewStack: [],
+    zoom: 5.5,
     pitch: 45,
-    bearing: 0,
+    bearing: 20,
+    mapCenter: [34.8854, 31.7844],
+    selectedCity: null,
     selectedBuilding: null,
     selectedZone: null,
   }),

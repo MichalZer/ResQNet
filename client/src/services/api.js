@@ -1,10 +1,108 @@
 // Mock API Service - Simulates backend responses
+import { cityData, cityBuildings, cityIncidentZones, buildingDetails } from '../data/mockData';
 
 export const mockAPI = {
   /**
    * Fetch initial building data
    */
   async fetchBuilding(buildingId = 'B1') {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          buildingId,
+          timestamp: new Date().toISOString(),
+          zones: [
+            {
+              id: 'F4-ZA',
+              floor: 4,
+              name: 'Zone A',
+              priorityScore: 45,
+              riskLevel: 'medium',
+              estimatedTrapped: 0,
+              signals: {
+                phonesDisconnected: 0,
+                wifiOffline: false,
+                electricityUsage: 'normal',
+                wearableAlert: false,
+              },
+              coordinates: { x: 120, y: 80 },
+            },
+            {
+              id: 'F3-ZB',
+              floor: 3,
+              name: 'Zone B',
+              priorityScore: 30,
+              riskLevel: 'low',
+              estimatedTrapped: 0,
+              signals: {
+                phonesDisconnected: 0,
+                wifiOffline: false,
+                electricityUsage: 'normal',
+                wearableAlert: false,
+              },
+              coordinates: { x: 200, y: 150 },
+            },
+            {
+              id: 'F2-ZC',
+              floor: 2,
+              name: 'Zone C',
+              priorityScore: 20,
+              riskLevel: 'low',
+              estimatedTrapped: 0,
+              signals: {
+                phonesDisconnected: 0,
+                wifiOffline: false,
+                electricityUsage: 'normal',
+                wearableAlert: false,
+              },
+              coordinates: { x: 80, y: 200 },
+            },
+          ],
+          alerts: [],
+        });
+      }, 500);
+    });
+  },
+
+  /**
+   * Fetch overview list of cities
+   */
+  async fetchCities() {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(cityData), 300);
+    });
+  },
+
+  /**
+   * Fetch details for a specific city including buildings and incident zones
+   */
+  async fetchCityDetails(cityId) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const city = cityData.find((item) => item.id === cityId);
+        resolve({
+          ...city,
+          buildings: cityBuildings[cityId] || [],
+          incidentZones: cityIncidentZones[cityId] || [],
+        });
+      }, 300);
+    });
+  },
+
+  /**
+   * Fetch building details
+   */
+  async fetchBuilding(buildingId = 'B1') {
+    const building = buildingDetails[buildingId];
+    if (building) {
+      return new Promise((resolve) => {
+        setTimeout(() => resolve({
+          ...building,
+          timestamp: new Date().toISOString(),
+        }), 400);
+      });
+    }
+
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({

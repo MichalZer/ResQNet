@@ -65,7 +65,7 @@ export function DashboardPage() {
   }, [simulationTime, setZones, addAlert]);
 
   return (
-    <div className="min-h-screen bg-dark-bg text-dark-text flex flex-col overflow-hidden">
+    <div className="flex h-screen w-screen m-0 p-0 bg-[#0B0F19] text-slate-100 overflow-hidden flex-col">
       {/* Top Navigation */}
       <TopNavigation />
 
