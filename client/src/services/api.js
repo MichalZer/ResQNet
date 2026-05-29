@@ -68,26 +68,48 @@ export const mockAPI = {
    * Fetch overview list of cities
    */
   async fetchCities() {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(cityData), 300);
-    });
+  const response = await fetch("http://127.0.0.1:8000/simulation/rescue-scores");
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch rescue scores");
+  }
+
+  const data = await response.json();
+
+ return data.map((zone, index) => ({
+  id: zone.areaId,
+  name: zone.areaId,
+  region: "Live Fusion Zone",
+  riskLevel: zone.riskLevel,
+  priorityScore: zone.priorityScore,
+  incidentCount: zone.estimatedTrapped ?? 0,
+  estimatedTrapped: zone.estimatedTrapped ?? 0,
+  evidence: zone.evidence ?? [],
+  coordinates:
+    index === 0
+      ? [31.7683, 35.2137]
+      : [32.0853, 34.7818],
+  markerPosition: {
+    left: `${45 + index * 8}%`,
+    top: `${35 + index * 8}%`,
   },
+}));
+},
 
   /**
    * Fetch details for a specific city including buildings and incident zones
    */
-  async fetchCityDetails(cityId) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const city = cityData.find((item) => item.id === cityId);
-        resolve({
-          ...city,
-          buildings: cityBuildings[cityId] || [],
-          incidentZones: cityIncidentZones[cityId] || [],
-        });
-      }, 300);
-    });
-  },
+ async fetchCityDetails(cityId) {
+  const cities = await this.fetchCities();
+
+  const city = cities.find((item) => item.id === cityId) || cities[0];
+
+  return {
+    ...city,
+    buildings: [],
+    incidentZones: [],
+  };
+},
 
   /**
    * Fetch building details
@@ -164,292 +186,25 @@ export const mockAPI = {
   /**
    * Get simulation phase data based on time
    */
-  async getSimulationPhase(simulationTime) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        let zones = [];
-        let alerts = [];
+  async getSimulationPhase() {
 
-        // Phase 0: 00:00-10:00 - Normal state
-        if (simulationTime < 10) {
-          zones = [
-            {
-              id: 'F4-ZA',
-              floor: 4,
-              name: 'Zone A',
-              priorityScore: Math.max(45, 45 + Math.random() * 5),
-              riskLevel: 'medium',
-              estimatedTrapped: 0,
-              signals: {
-                phonesDisconnected: 0,
-                wifiOffline: false,
-                electricityUsage: 'normal',
-                wearableAlert: false,
-              },
-              coordinates: { x: 120, y: 80 },
-            },
-            {
-              id: 'F3-ZB',
-              floor: 3,
-              name: 'Zone B',
-              priorityScore: 30,
-              riskLevel: 'low',
-              estimatedTrapped: 0,
-              signals: {
-                phonesDisconnected: 0,
-                wifiOffline: false,
-                electricityUsage: 'normal',
-                wearableAlert: false,
-              },
-              coordinates: { x: 200, y: 150 },
-            },
-          ];
-        }
-        // Phase 1: 10:00-20:00 - Minor seismic activity
-        else if (simulationTime < 20) {
-          zones = [
-            {
-              id: 'F4-ZA',
-              floor: 4,
-              name: 'Zone A',
-              priorityScore: 55 + Math.random() * 10,
-              riskLevel: 'high',
-              estimatedTrapped: 0,
-              signals: {
-                phonesDisconnected: 1,
-                wifiOffline: false,
-                electricityUsage: 'elevated',
-                wearableAlert: true,
-              },
-              coordinates: { x: 120, y: 80 },
-            },
-            {
-              id: 'F3-ZB',
-              floor: 3,
-              name: 'Zone B',
-              priorityScore: 45 + Math.random() * 5,
-              riskLevel: 'medium',
-              estimatedTrapped: 0,
-              signals: {
-                phonesDisconnected: 0,
-                wifiOffline: false,
-                electricityUsage: 'normal',
-                wearableAlert: false,
-              },
-              coordinates: { x: 200, y: 150 },
-            },
-          ];
-          alerts = [
-            {
-              id: 'ALERT-1',
-              severity: 'warning',
-              message: 'Minor seismic activity detected',
-              timestamp: new Date().toISOString(),
-            },
-          ];
-        }
-        // Phase 2: 20:00-30:00 - Structural damage
-        else if (simulationTime < 30) {
-          zones = [
-            {
-              id: 'F4-ZA',
-              floor: 4,
-              name: 'Zone A',
-              priorityScore: 75 + Math.random() * 10,
-              riskLevel: 'critical',
-              estimatedTrapped: 2,
-              signals: {
-                phonesDisconnected: 3,
-                wifiOffline: true,
-                electricityUsage: 'high',
-                wearableAlert: true,
-              },
-              coordinates: { x: 120, y: 80 },
-            },
-            {
-              id: 'F3-ZB',
-              floor: 3,
-              name: 'Zone B',
-              priorityScore: 60 + Math.random() * 10,
-              riskLevel: 'high',
-              estimatedTrapped: 1,
-              signals: {
-                phonesDisconnected: 2,
-                wifiOffline: false,
-                electricityUsage: 'high',
-                wearableAlert: true,
-              },
-              coordinates: { x: 200, y: 150 },
-            },
-            {
-              id: 'F2-ZC',
-              floor: 2,
-              name: 'Zone C',
-              priorityScore: 40 + Math.random() * 5,
-              riskLevel: 'medium',
-              estimatedTrapped: 0,
-              signals: {
-                phonesDisconnected: 1,
-                wifiOffline: false,
-                electricityUsage: 'normal',
-                wearableAlert: false,
-              },
-              coordinates: { x: 80, y: 200 },
-            },
-          ];
-          alerts = [
-            {
-              id: 'ALERT-2',
-              severity: 'high',
-              message: 'Structural damage detected in Floor 4 - Zone A',
-              timestamp: new Date().toISOString(),
-            },
-            {
-              id: 'ALERT-3',
-              severity: 'warning',
-              message: 'Signal loss in multiple zones',
-              timestamp: new Date().toISOString(),
-            },
-          ];
-        }
-        // Phase 3: 30:00-40:00 - Multiple signals lost
-        else if (simulationTime < 40) {
-          zones = [
-            {
-              id: 'F4-ZA',
-              floor: 4,
-              name: 'Zone A',
-              priorityScore: 92 + Math.random() * 5,
-              riskLevel: 'critical',
-              estimatedTrapped: 4,
-              signals: {
-                phonesDisconnected: 4,
-                wifiOffline: true,
-                electricityUsage: 'high',
-                wearableAlert: true,
-              },
-              coordinates: { x: 120, y: 80 },
-            },
-            {
-              id: 'F3-ZB',
-              floor: 3,
-              name: 'Zone B',
-              priorityScore: 75 + Math.random() * 10,
-              riskLevel: 'critical',
-              estimatedTrapped: 3,
-              signals: {
-                phonesDisconnected: 3,
-                wifiOffline: true,
-                electricityUsage: 'high',
-                wearableAlert: true,
-              },
-              coordinates: { x: 200, y: 150 },
-            },
-            {
-              id: 'F2-ZC',
-              floor: 2,
-              name: 'Zone C',
-              priorityScore: 55 + Math.random() * 10,
-              riskLevel: 'high',
-              estimatedTrapped: 1,
-              signals: {
-                phonesDisconnected: 2,
-                wifiOffline: false,
-                electricityUsage: 'high',
-                wearableAlert: true,
-              },
-              coordinates: { x: 80, y: 200 },
-            },
-          ];
-          alerts = [
-            {
-              id: 'ALERT-4',
-              severity: 'critical',
-              message: 'CRITICAL: Multiple signals lost in Floor 4 - Zone A',
-              timestamp: new Date().toISOString(),
-            },
-            {
-              id: 'ALERT-5',
-              severity: 'high',
-              message: 'Estimated 4 civilians trapped in Zone A',
-              timestamp: new Date().toISOString(),
-            },
-          ];
-        }
-        // Phase 4: 40:00-70:00 - Escalating crisis
-        else {
-          zones = [
-            {
-              id: 'F4-ZA',
-              floor: 4,
-              name: 'Zone A',
-              priorityScore: 95 + Math.random() * 3,
-              riskLevel: 'critical',
-              estimatedTrapped: 4,
-              signals: {
-                phonesDisconnected: 4,
-                wifiOffline: true,
-                electricityUsage: 'critical',
-                wearableAlert: true,
-              },
-              coordinates: { x: 120, y: 80 },
-            },
-            {
-              id: 'F3-ZB',
-              floor: 3,
-              name: 'Zone B',
-              priorityScore: 85 + Math.random() * 8,
-              riskLevel: 'critical',
-              estimatedTrapped: 3,
-              signals: {
-                phonesDisconnected: 3,
-                wifiOffline: true,
-                electricityUsage: 'critical',
-                wearableAlert: true,
-              },
-              coordinates: { x: 200, y: 150 },
-            },
-            {
-              id: 'F2-ZC',
-              floor: 2,
-              name: 'Zone C',
-              priorityScore: 70 + Math.random() * 10,
-              riskLevel: 'high',
-              estimatedTrapped: 2,
-              signals: {
-                phonesDisconnected: 2,
-                wifiOffline: true,
-                electricityUsage: 'critical',
-                wearableAlert: true,
-              },
-              coordinates: { x: 80, y: 200 },
-            },
-          ];
-          alerts = [
-            {
-              id: 'ALERT-6',
-              severity: 'critical',
-              message: 'ESCALATING CRISIS: Structural integrity failing',
-              timestamp: new Date().toISOString(),
-            },
-            {
-              id: 'ALERT-7',
-              severity: 'critical',
-              message: 'BREAK GLASS MODE RECOMMENDED',
-              timestamp: new Date().toISOString(),
-            },
-          ];
-        }
+  const response = await fetch(
+    "http://127.0.0.1:8000/simulation/rescue-scores"
+  );
 
-        resolve({
-          zones,
-          alerts,
-          timestamp: new Date().toISOString(),
-        });
-      }, 100);
-    });
-  },
+  const zones = await response.json();
 
+  const formattedZones = zones.map(zone => ({
+    ...zone,
+    id: zone.areaId
+  }));
+
+  return {
+    zones: formattedZones,
+    alerts: [],
+    timestamp: new Date().toISOString(),
+  };
+},
   /**
    * Get analytics timeline data
    */
