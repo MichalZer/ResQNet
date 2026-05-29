@@ -3,6 +3,8 @@
 /* No additional CSS needed - all styling handled by Tailwind CSS */
 @import "tailwindcss";
 
+
+
 .hero {
   position: relative;
 
