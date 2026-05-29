@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "source": "wifi",
+    "eventType": "router_online",
+    "timestamp": "2026-05-27T10:40:00",
+    "areaId": "floor4_zoneA",
+    "connectedDevices": 1
+  },
+  {
+    "source": "wifi",
+    "eventType": "router_offline",
+    "timestamp": "2026-05-27T10:42:15",
+    "areaId": "floor4_zoneA",
+    "connectedDevices": 0
+  },
+  {
+    "source": "wifi",
+    "eventType": "router_online",
+    "timestamp": "2026-05-27T10:40:00",
+    "areaId": "floor5_zoneC",
+    "connectedDevices": 0
+  }
+]
