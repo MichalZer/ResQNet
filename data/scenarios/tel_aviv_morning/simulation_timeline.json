@@ -1,0 +1,283 @@
+{
+    "10:40": {
+        "desc": "Building Stable",
+        "buildingId": "B1",
+        "zones": [
+            {
+                "id": "floor4_zoneA",
+                "floor": 4,
+                "name": "Zone A",
+                "priorityScore": 12,
+                "riskLevel": "low",
+                "estimatedPeople": 4,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 120,
+                    "y": 80
+                }
+            },
+            {
+                "id": "floor2_zoneB",
+                "floor": 2,
+                "name": "Zone B",
+                "priorityScore": 5,
+                "riskLevel": "low",
+                "estimatedPeople": 2,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 80,
+                    "y": 45
+                }
+            },
+            {
+                "id": "floor5_zoneC",
+                "floor": 5,
+                "name": "Zone C",
+                "priorityScore": 10,
+                "riskLevel": "low",
+                "estimatedPeople": 3,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 200,
+                    "y": 150
+                }
+            }
+        ]
+    },
+    "10:42": {
+        "desc": "Minor Collapse Detected",
+        "buildingId": "B1",
+        "zones": [
+            {
+                "id": "floor4_zoneA",
+                "floor": 4,
+                "name": "Zone A",
+                "priorityScore": 45,
+                "riskLevel": "medium",
+                "estimatedPeople": 4,
+                "estimatedTrapped": 4,
+                "signals": {
+                    "phonesDisconnected": 1,
+                    "wifiOffline": false,
+                    "electricityUsage": "high",
+                    "wearableAlert": false
+                },
+                "evidence": [
+                    "Electricity spike"
+                ],
+                "coordinates": {
+                    "x": 120,
+                    "y": 80
+                }
+            },
+            {
+                "id": "floor2_zoneB",
+                "floor": 2,
+                "name": "Zone B",
+                "priorityScore": 5,
+                "riskLevel": "low",
+                "estimatedPeople": 2,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 80,
+                    "y": 45
+                }
+            },
+            {
+                "id": "floor5_zoneC",
+                "floor": 5,
+                "name": "Zone C",
+                "priorityScore": 30,
+                "riskLevel": "low",
+                "estimatedPeople": 3,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "high",
+                    "wearableAlert": false
+                },
+                "evidence": [
+                    "Electricity spike"
+                ],
+                "coordinates": {
+                    "x": 200,
+                    "y": 150
+                }
+            }
+        ]
+    },
+    "10:43": {
+        "desc": "Signals Lost",
+        "buildingId": "B1",
+        "zones": [
+            {
+                "id": "floor4_zoneA",
+                "floor": 4,
+                "name": "Zone A",
+                "priorityScore": 68,
+                "riskLevel": "high",
+                "estimatedPeople": 4,
+                "estimatedTrapped": 4,
+                "signals": {
+                    "phonesDisconnected": 3,
+                    "wifiOffline": true,
+                    "electricityUsage": "offline",
+                    "wearableAlert": false
+                },
+                "evidence": [
+                    "WiFi offline",
+                    "Phones lost"
+                ],
+                "coordinates": {
+                    "x": 120,
+                    "y": 80
+                }
+            },
+            {
+                "id": "floor2_zoneB",
+                "floor": 2,
+                "name": "Zone B",
+                "priorityScore": 5,
+                "riskLevel": "low",
+                "estimatedPeople": 2,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 80,
+                    "y": 45
+                }
+            },
+            {
+                "id": "floor5_zoneC",
+                "floor": 5,
+                "name": "Zone C",
+                "priorityScore": 45,
+                "riskLevel": "medium",
+                "estimatedPeople": 3,
+                "estimatedTrapped": 1,
+                "signals": {
+                    "phonesDisconnected": 1,
+                    "wifiOffline": false,
+                    "electricityUsage": "high",
+                    "wearableAlert": false
+                },
+                "evidence": [
+                    "Phone lost",
+                    "Elevated HR"
+                ],
+                "coordinates": {
+                    "x": 200,
+                    "y": 150
+                }
+            }
+        ]
+    },
+    "10:45": {
+        "desc": "Critical Alert Triggered",
+        "buildingId": "B1",
+        "zones": [
+            {
+                "id": "floor4_zoneA",
+                "floor": 4,
+                "name": "Zone A",
+                "priorityScore": 95,
+                "riskLevel": "critical",
+                "estimatedPeople": 4,
+                "estimatedTrapped": 4,
+                "signals": {
+                    "phonesDisconnected": 4,
+                    "wifiOffline": true,
+                    "electricityUsage": "offline",
+                    "wearableAlert": true
+                },
+                "evidence": [
+                    "WiFi offline",
+                    "Multiple phones lost",
+                    "High HR"
+                ],
+                "coordinates": {
+                    "x": 120,
+                    "y": 80
+                }
+            },
+            {
+                "id": "floor2_zoneB",
+                "floor": 2,
+                "name": "Zone B",
+                "priorityScore": 5,
+                "riskLevel": "low",
+                "estimatedPeople": 2,
+                "estimatedTrapped": 0,
+                "signals": {
+                    "phonesDisconnected": 0,
+                    "wifiOffline": false,
+                    "electricityUsage": "normal",
+                    "wearableAlert": false
+                },
+                "evidence": [],
+                "coordinates": {
+                    "x": 80,
+                    "y": 45
+                }
+            },
+            {
+                "id": "floor5_zoneC",
+                "floor": 5,
+                "name": "Zone C",
+                "priorityScore": 55,
+                "riskLevel": "medium",
+                "estimatedPeople": 3,
+                "estimatedTrapped": 2,
+                "signals": {
+                    "phonesDisconnected": 1,
+                    "wifiOffline": false,
+                    "electricityUsage": "high",
+                    "wearableAlert": true
+                },
+                "evidence": [
+                    "Elevated HR",
+                    "Partial collapse"
+                ],
+                "coordinates": {
+                    "x": 200,
+                    "y": 150
+                }
+            }
+        ]
+    }
+}

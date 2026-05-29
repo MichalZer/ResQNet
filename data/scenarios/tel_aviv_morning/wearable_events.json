@@ -1,0 +1,16 @@
+[
+    {
+        "source": "wearable",
+        "eventType": "high_heart_rate",
+        "timestamp": "2026-05-27T10:42:14",
+        "areaId": "floor4_zoneA",
+        "heartRate": 145
+    },
+    {
+        "source": "wearable",
+        "eventType": "elevated_heart_rate",
+        "timestamp": "2026-05-27T10:42:30",
+        "areaId": "floor5_zoneC",
+        "heartRate": 110
+    }
+]

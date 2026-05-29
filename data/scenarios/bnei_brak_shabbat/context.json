@@ -1,0 +1,8 @@
+{
+    "scenarioId": "bnei_brak_shabbat",
+    "city": "Bnei Brak",
+    "timeOfDay": "afternoon",
+    "isShabbat": true,
+    "isReligiousArea": true,
+    "eventType": "building_collapse"
+}

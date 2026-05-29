@@ -1,0 +1,8 @@
+{
+    "scenarioId": "tel_aviv_morning",
+    "city": "Tel Aviv",
+    "timeOfDay": "morning",
+    "isShabbat": false,
+    "isReligiousArea": false,
+    "eventType": "building_collapse"
+}
