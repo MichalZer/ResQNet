@@ -1,0 +1,9 @@
+[
+    {
+        "source": "cellular",
+        "eventType": "signal_active",
+        "timestamp": "2026-05-27T14:00:00",
+        "areaId": "floor1_zoneA",
+        "deviceId": "phone_999"
+    }
+]

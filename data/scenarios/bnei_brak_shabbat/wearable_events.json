@@ -1,0 +1,9 @@
+[
+    {
+        "source": "wearable",
+        "eventType": "high_heart_rate",
+        "timestamp": "2026-05-27T14:05:10",
+        "areaId": "floor3_zoneB",
+        "heartRate": 160
+    }
+]

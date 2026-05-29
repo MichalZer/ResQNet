@@ -1,0 +1,30 @@
+[
+    {
+        "source": "cellular",
+        "eventType": "signal_active",
+        "timestamp": "2026-05-27T10:40:00",
+        "areaId": "floor4_zoneA",
+        "deviceId": "phone_104"
+    },
+    {
+        "source": "cellular",
+        "eventType": "signal_lost",
+        "timestamp": "2026-05-27T10:42:13",
+        "areaId": "floor4_zoneA",
+        "deviceId": "phone_104"
+    },
+    {
+        "source": "cellular",
+        "eventType": "signal_active",
+        "timestamp": "2026-05-27T10:40:00",
+        "areaId": "floor5_zoneC",
+        "deviceId": "phone_301"
+    },
+    {
+        "source": "cellular",
+        "eventType": "signal_lost",
+        "timestamp": "2026-05-27T10:43:00",
+        "areaId": "floor5_zoneC",
+        "deviceId": "phone_301"
+    }
+]
