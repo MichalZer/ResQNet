@@ -27,7 +27,7 @@ def calculate_rescue_score(
     # Run processors
     cellular_result = process_cellular_events(cellular_events)
 
-    wifi_result = process_wifi_events(wifi_events)
+    wifi_result = process_wifi_events(wifi_events, context=context)
 
     smart_meter_result = process_smart_meter_events(
         smart_meter_events
